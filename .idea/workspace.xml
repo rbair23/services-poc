@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9349e3b6-8d98-4742-a41f-0c2fee1a6652" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/buildSrc/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/buildSrc/gradle.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/buildSrc/src/main/kotlin/RepairDashedCommentsFormatterStep.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/buildSrc/src/main/kotlin/StripOldLicenseFormatterStep.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/buildSrc/src/main/kotlin/com.hedera.hashgraph.aggregate-reports.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/buildSrc/src/main/kotlin/com.hedera.hashgraph.benchmark-conventions.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/buildSrc/src/main/kotlin/com.hedera.hashgraph.hedera-conventions.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/buildSrc/src/main/kotlin/com.hedera.hashgraph.shadow-jar.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/ChangeManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/Endpoint.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/QueryHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/Service.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/Store.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/TransactionHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/AccountID.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/Duration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/ResponseCode.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/SignatureMap.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/SignedTransaction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/Timestamp.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/TimestampSeconds.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/Transaction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/TransactionBody.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/TransactionID.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/TransactionRecord.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/TransactionResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/module-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/Hedera.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/grpc/GrpcHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/grpc/SignedTransactionMarshaller.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/grpc/TransactionMarshaller.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/grpc/TransactionResponseMarshaller.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/module-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service-api/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file/FileEndpoint.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file/FileService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file/FileTransactionHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file/model/FileCreateTransactionBody.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file/model/FileID.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file/model/FileInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/module-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/FileEndpointImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/FileServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/FileTransactionHandlerImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/serde/FileCreateTransactionBodyParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/store/FileLeaf.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/store/FileStore.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/module-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="services-poc" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="services-poc" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="services-poc" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2D63rECex73I9D7ShX8A9QlZ3Tk" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.go.format.on.save.advertiser.fired": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "go.import.settings.migrated": "true",
+    "last_opened_file_path": "/Users/richardbair/IdeaProjects/services-poc/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file" />
+      <recent name="$PROJECT_DIR$/modules/hedera-file-service/src/main/java" />
+      <recent name="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java" />
+      <recent name="$PROJECT_DIR$/modules/hedera-app-api/src/main/java" />
+      <recent name="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.hedera.hashgraph.file" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="services-poc [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.services-poc [build]" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9349e3b6-8d98-4742-a41f-0c2fee1a6652" name="Changes" comment="" />
+      <created>1660005906268</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1660005906268</updated>
+      <workItem from="1660005910383" duration="2000" />
+      <workItem from="1660089919245" duration="62000" />
+      <workItem from="1660090287401" duration="11087000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
+  </component>
+</project>
