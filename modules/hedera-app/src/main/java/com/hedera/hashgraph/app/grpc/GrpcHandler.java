@@ -46,14 +46,14 @@ public class GrpcHandler {
 							// TODO Some validation on signatures on "tx"
 							// Then deserialize the TransactionBody
 							// TODO actually parse the bytes to get the TransactionBody
-							final var body = new TransactionBody(null, null, 0, null, null, null);
+//							final var body = new TransactionBody(null, null, 0, null, null, null);
 							// Then validate the TransactionBody
 							// TODO do some validation on the transaction body. Does the account exist? Right shard/realm?
 							// Then delegate to the service
-							final var response = handler.apply(body);
-							System.out.println(response);
+//							final var response = handler.apply(body);
+//							System.out.println(response);
 							// TODO Map response to the right code, and add trailers
-							call.close(Status.fromCode(Status.Code.OK), null);
+//							call.close(Status.fromCode(Status.Code.OK), null);
 						}
 					}
 			));
@@ -79,7 +79,7 @@ public class GrpcHandler {
 							final var response = handler.apply(null);
 							System.out.println(response);
 							// TODO Map response to the right code, and add trailers
-							call.close(Status.fromCode(Status.Code.OK), null);
+//							call.close(Status.fromCode(Status.Code.OK), null);
 						}
 					}
 			));

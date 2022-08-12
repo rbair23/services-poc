@@ -1,4 +1,4 @@
-module com.hedera.hashgraph.base {
+module com.hedera.hashgraph.api {
 	requires com.hedera.hashgraph.protoparse;
 	exports com.hedera.hashgraph.base;
 	exports com.hedera.hashgraph.base.model;
