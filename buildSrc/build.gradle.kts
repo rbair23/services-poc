@@ -19,6 +19,7 @@
  */
 
 plugins {
+    antlr
     // Support convention plugins written in Kotlin. Convention plugins are build scripts in 'src/main'
     // that automatically become available as plugins in the main build.
     `kotlin-dsl`
@@ -33,8 +34,13 @@ repositories {
 }
 
 dependencies {
+    antlr("org.antlr:antlr4:4.10.1")
     implementation("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3")
     implementation("me.champeau.jmh:jmh-gradle-plugin:0.6.6")
     implementation("com.diffplug.spotless:spotless-plugin-gradle:6.8.0")
     implementation("gradle.plugin.com.github.johnrengelman:shadow:7.1.2")
+}
+
+tasks.generateGrammarSource {
+    arguments = arguments + listOf("-package", "com.hedera.hashgraph.protoparser.grammar")
 }

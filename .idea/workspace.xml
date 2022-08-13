@@ -4,17 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9349e3b6-8d98-4742-a41f-0c2fee1a6652" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/aws.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="9349e3b6-8d98-4742-a41f-0c2fee1a6652" name="Changes" comment="Fixing build">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/grpc/GrpcHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/grpc/GrpcHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buildSrc/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/buildSrc/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-app-api/build.gradle.kts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,6 +23,18 @@
     <system id="GRADLE">
       <state>
         <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/modules/hedera-app">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/modules/hedera-token-service">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/modules/hedera-token-service-api">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/modules/hedera-app-api">
           <activation />
         </task>
         <projects_view>
@@ -50,12 +55,56 @@
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="build" type="c8890929:TasksNode$1" />
               </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="services-poc" type="f1a62948:ProjectNode" />
+                <item name="buildSrc" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="services-poc" type="f1a62948:ProjectNode" />
+                <item name="buildSrc" type="2d1252cf:ModuleNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="services-poc" type="f1a62948:ProjectNode" />
+                <item name="modules" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="services-poc" type="f1a62948:ProjectNode" />
+                <item name="modules" type="2d1252cf:ModuleNode" />
+                <item name="hedera-app-api" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="services-poc" type="f1a62948:ProjectNode" />
+                <item name="modules" type="2d1252cf:ModuleNode" />
+                <item name="hedera-app-api" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="services-poc" type="f1a62948:ProjectNode" />
+                <item name="modules" type="2d1252cf:ModuleNode" />
+                <item name="hedera-app-api" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="other" type="c8890929:TasksNode$1" />
+              </path>
             </expand>
             <select />
           </tree_state>
         </projects_view>
       </state>
     </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -70,25 +119,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.go.format.on.save.advertiser.fired": "true",
-    "RunOnceActivity.go.formatter.settings.were.checked": "true",
-    "RunOnceActivity.go.migrated.go.modules.settings": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "go.import.settings.migrated": "true",
-    "last_opened_file_path": "/Users/jasperpotts/.m2",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.format.on.save.advertiser.fired&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/jasperpotts/.m2&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file" />
@@ -101,7 +150,7 @@
       <recent name="com.hedera.hashgraph.file" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.services-poc [clean]">
+  <component name="RunManager" selected="Gradle.services-poc:modules:hedera-app-api [protoGenerator]">
     <configuration name="services-poc [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -114,6 +163,27 @@
         <option name="taskNames">
           <list>
             <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="services-poc [classes]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="classes" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -144,10 +214,55 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
+    <configuration name="services-poc:modules:hedera-app [protoGenerator]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/modules/hedera-app" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="protoGenerator" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="services-poc:modules:hedera-app-api [protoGenerator]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/modules/hedera-app-api" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="protoGenerator" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.services-poc:modules:hedera-app-api [protoGenerator]" />
         <item itemvalue="Gradle.services-poc [clean]" />
         <item itemvalue="Gradle.services-poc [build]" />
+        <item itemvalue="Gradle.services-poc [classes]" />
+        <item itemvalue="Gradle.services-poc:modules:hedera-app [protoGenerator]" />
       </list>
     </recent_temporary>
   </component>
@@ -163,8 +278,17 @@
       <workItem from="1660089919245" duration="62000" />
       <workItem from="1660090287401" duration="11087000" />
       <workItem from="1660165340750" duration="5101000" />
-      <workItem from="1660260607346" duration="8985000" />
+      <workItem from="1660260607346" duration="13026000" />
+      <workItem from="1660347879182" duration="2866000" />
     </task>
+    <task id="LOCAL-00001" summary="Fixing build">
+      <created>1660344545386</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1660344545386</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -180,6 +304,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Fixing build" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixing build" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
