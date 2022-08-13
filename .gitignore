@@ -40,3 +40,4 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+/modules/hedera-app-api/src/main/generated-java/
