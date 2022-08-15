@@ -3,6 +3,7 @@ rootProject.name = "services-poc"
 // Define the subprojects
 include(":modules:hedera-app")
 include(":modules:hedera-app-api")
+include(":modules:hedera-proto-api")
 include(":modules:hedera-file-service")
 include(":modules:hedera-file-service-api")
 include(":modules:hedera-token-service")

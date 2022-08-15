@@ -39,51 +39,65 @@ public abstract class ProtoGeneratorPlugin extends DefaultTask {
 		public void perform() throws IOException {
 			final File protoDir = getProtoSrcDir().getAsFile().get();
 			final File generatedDir = getGeneratedFileDir().getAsFile().get();
-			System.out.println("protoDir.getAbsolutePath() = " + protoDir.getAbsolutePath());
-			for (final File file : protoDir.listFiles()) {
-				System.out.println("	file.getAbsolutePath() = " + file.getAbsolutePath());
-//				if (file.getName().equals("timestamp.proto")) {
-					generateFile(file, generatedDir);
-//				}
-			}
+			generateFile(protoDir, generatedDir);
 		}
 
 		private void generateFile(File protoFile, File destinationDir) throws IOException {
-			try (var input = new FileInputStream(protoFile)) {
-				final var lexer = new Protobuf3Lexer(CharStreams.fromStream(input));
-				final var parser = new Protobuf3Parser(new CommonTokenStream(lexer));
-				var parsedDoc =parser.proto();
-				final String javaPackage = getJavaPackage(parsedDoc);
-				System.out.println("javaPackage = " + javaPackage);
-				final Path packageDir = destinationDir.toPath().resolve(javaPackage.replace('.','/'));
-				System.out.println("packageDir = " + packageDir);
-				Files.createDirectories(packageDir);
-				for(var topLevelDef: parsedDoc.topLevelDef()){
+			System.out.println("--- protoFile = " + protoFile.getAbsolutePath());
+			if (protoFile.isDirectory()) {
+				for (final File file : protoFile.listFiles()) {
+					System.out.println("		file.getName() = " + file.getName());
+				if (file.isDirectory() || file.getName().equals("timestamp.proto")) {
+					generateFile(file, destinationDir);
+				}
+				}
+			} else {
+				try (var input = new FileInputStream(protoFile)) {
+					final var lexer = new Protobuf3Lexer(CharStreams.fromStream(input));
+					final var parser = new Protobuf3Parser(new CommonTokenStream(lexer));
+					var parsedDoc = parser.proto();
+					final String javaPackage = getJavaPackage(parsedDoc);
+					System.out.println("javaPackage = " + javaPackage);
+					final Path packageDir = destinationDir.toPath().resolve(javaPackage.replace('.', '/'));
+					System.out.println("packageDir = " + packageDir);
+					Files.createDirectories(packageDir);
+					for (var topLevelDef : parsedDoc.topLevelDef()) {
 
-					final var msgDef = topLevelDef.messageDef();
-					if (msgDef != null) {
-						var msgName = msgDef.messageName().getText();
-						System.out.println("msgName = " + msgName);
-						final var javaFile = packageDir.resolve(msgName+".java");
-						try(FileWriter javaWriter = new FileWriter(javaFile.toFile())) {
-							javaWriter.write("package "+javaPackage+";\n\n");
-							javaWriter.write("public record "+msgName+"(\n");
-							for (int i = 0; i < msgDef.messageBody().messageElement().size(); i++) {
-								final boolean isLast = i == (msgDef.messageBody().messageElement().size()-1);
-								var item =  msgDef.messageBody().messageElement().get(i);
-								var fieldName = item.field().fieldName().getText();
-								System.out.println("	fieldName = " + fieldName);
-								var fieldNumber = Integer.parseInt(item.field().fieldNumber().getText());
-								System.out.println("	fieldNumber = " + fieldNumber);
+						final var msgDef = topLevelDef.messageDef();
+						if (msgDef != null) {
+							var msgName = msgDef.messageName().getText();
+							System.out.println("msgName = " + msgName);
+							final var javaFile = packageDir.resolve(msgName + ".java");
+							try (FileWriter javaWriter = new FileWriter(javaFile.toFile())) {
+								javaWriter.write("package " + javaPackage + ";\n\n");
+								javaWriter.write("public record " + msgName + "(\n");
+								for (int i = 0; i < msgDef.messageBody().messageElement().size(); i++) {
+									final boolean isLast = i == (msgDef.messageBody().messageElement().size() - 1);
+									var item = msgDef.messageBody().messageElement().get(i);
+									var fieldName = item.field().fieldName().getText();
+									System.out.println("	fieldName = " + fieldName);
+//
+//									var fieldType = switch (item.field().type_()) {
+//										case
+//									}
+									var fieldType = "String";
+									if (item.field().type_().INT32() != null) {
+										fieldType = "int";
+									} else if (item.field().type_().INT64() != null) {
+										fieldType = "long";
+									}
+									var fieldNumber = Integer.parseInt(item.field().fieldNumber().getText());
+									System.out.println("	fieldNumber = " + fieldNumber);
 
-								final var optionalComma = isLast ? "" : ",";
-								javaWriter.write("    "+fieldName+optionalComma+"\n");
+									final var optionalComma = isLast ? "" : ",";
+									javaWriter.write("    " + fieldType + " " + fieldName + optionalComma + "\n");
+								}
+
+								javaWriter.write("){}\n");
 							}
-
-							javaWriter.write("){}\n");
 						}
-					}
 
+					}
 				}
 			}
 		}
@@ -92,7 +106,7 @@ public abstract class ProtoGeneratorPlugin extends DefaultTask {
 			String packageName = "";
 			for(var option: parsedDoc.optionStatement()){
 				if ("java_package".equals(option.optionName().getText())) {
-					packageName = option.constant().getText();
+					packageName = option.constant().getText().replace("\"","");
 				}
 			}
 			return packageName;

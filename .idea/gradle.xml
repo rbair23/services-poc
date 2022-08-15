@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/modules/hedera-app-api" />
             <option value="$PROJECT_DIR$/modules/hedera-file-service" />
             <option value="$PROJECT_DIR$/modules/hedera-file-service-api" />
+            <option value="$PROJECT_DIR$/modules/hedera-proto-api" />
             <option value="$PROJECT_DIR$/modules/hedera-token-service" />
             <option value="$PROJECT_DIR$/modules/hedera-token-service-api" />
           </set>
