@@ -4,23 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9349e3b6-8d98-4742-a41f-0c2fee1a6652" name="Changes" comment="Added v0.00001 of record generator from protobufs">
-      <change afterPath="$PROJECT_DIR$/modules/hedera-proto-api/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+    <list default="true" id="9349e3b6-8d98-4742-a41f-0c2fee1a6652" name="Changes" comment="Added all other protobuf files. Moved proto generator to separate hedera-proto-api module">
+      <change afterPath="$PROJECT_DIR$/buildSrc/src/main/java/com/hedera/hashgraph/protoparser/RecordGenerator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buildSrc/src/main/antlr/com/hedera/hashgraph/protoparser/grammar/Protobuf3.g4" beforeDir="false" afterPath="$PROJECT_DIR$/buildSrc/src/main/antlr/com/hedera/hashgraph/protoparser/grammar/Protobuf3.g4" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/buildSrc/src/main/java/com/hedera/hashgraph/protoparser/ProtoGeneratorPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/buildSrc/src/main/java/com/hedera/hashgraph/protoparser/ProtoGeneratorPlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-app-api/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/proto/duration.proto" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/proto/services/base/duration.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/proto/query_header.proto" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/proto/services/base/query_header.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/proto/response_code.proto" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/proto/services/base/response_code.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/proto/response_header.proto" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/proto/services/base/response_header.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/proto/timestamp.proto" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/proto/services/base/timestamp.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/proto/transaction.proto" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/proto/services/base/transaction.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/proto/transaction_contents.proto" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/proto/services/base/transaction_contents.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/proto/transaction_get_fast_record.proto" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/proto/services/base/transaction_get_fast_record.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/proto/transaction_get_receipt.proto" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/proto/services/base/transaction_get_receipt.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/proto/transaction_get_record.proto" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/proto/services/base/transaction_get_record.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +36,9 @@
           <activation />
         </task>
         <task path="$PROJECT_DIR$/modules/hedera-app-api">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/modules/hedera-proto-api">
           <activation />
         </task>
         <projects_view>
@@ -105,6 +96,27 @@
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="other" type="c8890929:TasksNode$1" />
               </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="services-poc" type="f1a62948:ProjectNode" />
+                <item name="modules" type="2d1252cf:ModuleNode" />
+                <item name="hedera-proto-api" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="services-poc" type="f1a62948:ProjectNode" />
+                <item name="modules" type="2d1252cf:ModuleNode" />
+                <item name="hedera-proto-api" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="services-poc" type="f1a62948:ProjectNode" />
+                <item name="modules" type="2d1252cf:ModuleNode" />
+                <item name="hedera-proto-api" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
             </expand>
             <select />
           </tree_state>
@@ -122,6 +134,11 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/buildSrc/src/main/antlr/com/hedera/hashgraph/protoparser/grammar/Protobuf3.g4" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/buildSrc/src/main/java/com/hedera/hashgraph/protoparser/ProtoGeneratorPlugin.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/buildSrc/src/main/java/com/hedera/hashgraph/protoparser/RecordGenerator.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -149,6 +166,11 @@
     "project.structure.side.proportion": "0.0",
     "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "JSON"
+    ]
   }
 }]]></component>
   <component name="RecentsManager">
@@ -166,40 +188,20 @@
       <recent name="com.hedera.hashgraph.file" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.services-poc [build]">
-    <configuration name="services-poc [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+  <component name="RunManager" selected="Gradle.services-poc [jar]">
+    <configuration name="services-poc [clean build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
+        <option name="scriptParameters" value="" />
         <option name="taskDescriptions">
           <list />
         </option>
         <option name="taskNames">
           <list>
+            <option value="clean" />
             <option value="build" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <method v="2" />
-    </configuration>
-    <configuration name="services-poc [classes]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="classes" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -272,13 +274,41 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
+    <configuration name="services-poc:modules:hedera-proto-api [jar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/modules/hedera-proto-api" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="jar" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Gradle.services-poc:modules:hedera-proto-api [jar]" />
+      <item itemvalue="Gradle.services-poc [clean build]" />
+      <item itemvalue="Gradle.services-poc [clean]" />
+      <item itemvalue="Gradle.services-poc [jar]" />
+      <item itemvalue="Gradle.services-poc:modules:hedera-app-api [protoGenerator]" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.services-poc [build]" />
-        <item itemvalue="Gradle.services-poc [clean]" />
         <item itemvalue="Gradle.services-poc [jar]" />
+        <item itemvalue="Gradle.services-poc [clean build]" />
+        <item itemvalue="Gradle.services-poc:modules:hedera-proto-api [jar]" />
+        <item itemvalue="Gradle.services-poc [clean]" />
         <item itemvalue="Gradle.services-poc:modules:hedera-app-api [protoGenerator]" />
-        <item itemvalue="Gradle.services-poc [classes]" />
       </list>
     </recent_temporary>
   </component>
@@ -295,7 +325,7 @@
       <workItem from="1660090287401" duration="11087000" />
       <workItem from="1660165340750" duration="5101000" />
       <workItem from="1660260607346" duration="13026000" />
-      <workItem from="1660347879182" duration="9459000" />
+      <workItem from="1660347879182" duration="34537000" />
     </task>
     <task id="LOCAL-00001" summary="Fixing build">
       <created>1660344545386</created>
@@ -318,7 +348,14 @@
       <option name="project" value="LOCAL" />
       <updated>1660351166648</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Added all other protobuf files. Moved proto generator to separate hedera-proto-api module">
+      <created>1660606552029</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1660606552029</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -338,9 +375,21 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Fixing build" />
     <MESSAGE value="Added v0.00001 of record generator from protobufs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added v0.00001 of record generator from protobufs" />
+    <MESSAGE value="Added all other protobuf files. Moved proto generator to separate hedera-proto-api module" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added all other protobuf files. Moved proto generator to separate hedera-proto-api module" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
+  </component>
+  <component name="regexState">
+    <option name="map">
+      <map>
+        <entry key="flags" value="8" />
+        <entry key="mode" value="3" />
+        <entry key="regex" value="/\*\*\s+\n\s*" />
+        <entry key="replacement" value="A" />
+        <entry key="text" value="/** &#9;&#10;  * The response code that indicates the current status of the transaction.&#10; &#9; */" />
+      </map>
+    </option>
   </component>
 </project>

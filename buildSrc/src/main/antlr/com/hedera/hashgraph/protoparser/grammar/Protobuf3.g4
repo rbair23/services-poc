@@ -25,6 +25,8 @@ proto
     )*
   ;
 
+docComment: DOC_COMMENT*;
+
 // Syntax
 
 syntax
@@ -57,7 +59,7 @@ optionName
 // Normal Field
 
 field
-  : ( REPEATED )? type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI
+  : docComment ( REPEATED )? type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI
   ;
 
 fieldOptions
@@ -75,11 +77,11 @@ fieldNumber
 // Oneof and oneof field
 
 oneof
-  : ONEOF oneofName LC ( optionStatement | oneofField | emptyStatement_ )* RC
+  : docComment ONEOF oneofName LC ( optionStatement | oneofField | emptyStatement_ )* RC
   ;
 
 oneofField
-  : type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI
+  : docComment type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI
   ;
 
 // Map field
@@ -154,7 +156,7 @@ topLevelDef
 // enum
 
 enumDef
-  : ENUM enumName enumBody
+  : docComment ENUM enumName enumBody
   ;
 
 enumBody
@@ -168,7 +170,7 @@ enumElement
   ;
 
 enumField
-  : ident EQ ( MINUS )? intLit enumValueOptions?SEMI
+  : docComment ident EQ ( MINUS )? intLit enumValueOptions?SEMI
   ;
 
 enumValueOptions
@@ -182,7 +184,7 @@ enumValueOption
 // message
 
 messageDef
-  : MESSAGE messageName messageBody
+  : docComment MESSAGE messageName messageBody
   ;
 
 messageBody
@@ -203,7 +205,7 @@ messageElement
 // service
 
 serviceDef
-  : SERVICE serviceName LC serviceElement* RC
+  : docComment SERVICE serviceName LC serviceElement* RC
   ;
 
 serviceElement
@@ -213,7 +215,7 @@ serviceElement
   ;
 
 rpc
-  : RPC rpcName LP ( STREAM )? messageType RP
+  : docComment RPC rpcName LP ( STREAM )? messageType RP
         RETURNS LP ( STREAM )? messageType RP
         (LC ( optionStatement | emptyStatement_ )* RC | SEMI)
   ;
@@ -338,6 +340,7 @@ fragment HEX_DIGIT: [0-9A-Fa-f];
 // comments
 WS  :   [ \t\r\n\u000C]+ -> skip;
 LINE_COMMENT: '//' ~[\r\n]* -> skip;
+DOC_COMMENT: '/**' .*? '*/';
 COMMENT: '/*' .*? '*/' -> skip;
 
 keywords
