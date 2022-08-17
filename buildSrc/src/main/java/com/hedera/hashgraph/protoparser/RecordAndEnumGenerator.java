@@ -246,13 +246,31 @@ public class RecordAndEnumGenerator {
 						public int protobufOrdinal() {
 							return protobufOrdinal;
 						}
+						
+						/**
+						 * Get enum from protobuf ordinal
+						 * 
+						 * @param ordinal the protobuf ordinal number
+						 * @return enum for matching ordinal
+						 * @throws IllegalArgumentException if ordinal doesn't exist
+						 */
+						public static %s fromProtobufOrdinal(int ordinal) {
+							return switch(ordinal) {
+					%s
+								default -> throw new IllegalArgumentException("Unknown protobuf ordinal "+ordinal);
+							};
+						}
 					}
 					""".formatted(
 							javaDocComment,
 							deprectaed,
 							enumName,
 							enumValuesCode.stream().collect(Collectors.joining(",\n\n")),
-							enumName
+							enumName,
+							enumName,
+							enumValues.entrySet().stream().map((entry) -> {
+								return "			case "+entry.getKey()+" -> "+snakeToCamel(entry.getValue().name, true)+";";
+							}).collect(Collectors.joining("\n"))
 					)
 					.replaceAll("\n","\n"+indent);
 	}
