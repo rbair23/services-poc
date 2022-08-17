@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9349e3b6-8d98-4742-a41f-0c2fee1a6652" name="Changes" comment="Added all other protobuf files. Moved proto generator to separate hedera-proto-api module">
-      <change afterPath="$PROJECT_DIR$/buildSrc/src/main/java/com/hedera/hashgraph/protoparser/RecordGenerator.java" afterDir="false" />
+    <list default="true" id="9349e3b6-8d98-4742-a41f-0c2fee1a6652" name="Changes" comment="Remove prints">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/java/com/hedera/hashgraph/hapi/OneOf.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buildSrc/src/main/antlr/com/hedera/hashgraph/protoparser/grammar/Protobuf3.g4" beforeDir="false" afterPath="$PROJECT_DIR$/buildSrc/src/main/antlr/com/hedera/hashgraph/protoparser/grammar/Protobuf3.g4" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/buildSrc/src/main/java/com/hedera/hashgraph/protoparser/ProtoGeneratorPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/buildSrc/src/main/java/com/hedera/hashgraph/protoparser/ProtoGeneratorPlugin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buildSrc/src/main/java/com/hedera/hashgraph/protoparser/RecordGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/buildSrc/src/main/java/com/hedera/hashgraph/protoparser/RecordAndEnumGenerator.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +139,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/buildSrc/src/main/antlr/com/hedera/hashgraph/protoparser/grammar/Protobuf3.g4" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/buildSrc/src/main/java/com/hedera/hashgraph/protoparser/ProtoGeneratorPlugin.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/buildSrc/src/main/java/com/hedera/hashgraph/protoparser/RecordGenerator.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/buildSrc/src/main/java/com/hedera/hashgraph/protoparser/RecordAndEnumGenerator.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -188,7 +189,7 @@
       <recent name="com.hedera.hashgraph.file" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.services-poc [jar]">
+  <component name="RunManager" selected="Gradle.services-poc [clean build]">
     <configuration name="services-poc [clean build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -304,8 +305,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.services-poc [jar]" />
         <item itemvalue="Gradle.services-poc [clean build]" />
+        <item itemvalue="Gradle.services-poc [jar]" />
         <item itemvalue="Gradle.services-poc:modules:hedera-proto-api [jar]" />
         <item itemvalue="Gradle.services-poc [clean]" />
         <item itemvalue="Gradle.services-poc:modules:hedera-app-api [protoGenerator]" />
@@ -325,7 +326,7 @@
       <workItem from="1660090287401" duration="11087000" />
       <workItem from="1660165340750" duration="5101000" />
       <workItem from="1660260607346" duration="13026000" />
-      <workItem from="1660347879182" duration="34537000" />
+      <workItem from="1660347879182" duration="48163000" />
     </task>
     <task id="LOCAL-00001" summary="Fixing build">
       <created>1660344545386</created>
@@ -355,7 +356,21 @@
       <option name="project" value="LOCAL" />
       <updated>1660606552029</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Complete records generation">
+      <created>1660698057280</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1660698057280</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Remove prints">
+      <created>1660698265962</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1660698265962</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -376,7 +391,9 @@
     <MESSAGE value="Fixing build" />
     <MESSAGE value="Added v0.00001 of record generator from protobufs" />
     <MESSAGE value="Added all other protobuf files. Moved proto generator to separate hedera-proto-api module" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added all other protobuf files. Moved proto generator to separate hedera-proto-api module" />
+    <MESSAGE value="Complete records generation" />
+    <MESSAGE value="Remove prints" />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove prints" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
