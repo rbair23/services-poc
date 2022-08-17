@@ -66,7 +66,6 @@ public class RecordGenerator {
 	}
 
 	private static void generateFile(File protoFile, File destinationDir, Map<String,String> packageMap) throws IOException {
-		System.out.println("--- protoFile = " + protoFile.getAbsolutePath());
 		if (protoFile.isDirectory()) {
 			for (final File file : protoFile.listFiles()) {
 //				if (file.isDirectory() || file.getName().equals("timestamp.proto") || file.getName().equals("basic_types.proto")) {
@@ -82,9 +81,7 @@ public class RecordGenerator {
 				final Protobuf3Parser.ProtoContext parsedDoc = parser.proto();
 //				final String javaPackage = getJavaPackage(parsedDoc); // REMOVED because we want custom packages
 				final String javaPackage = computeJavaPackage(dirName);
-				System.out.println("javaPackage = " + javaPackage);
 				final Path packageDir = destinationDir.toPath().resolve(javaPackage.replace('.', '/'));
-				System.out.println("packageDir = " + packageDir);
 				Files.createDirectories(packageDir);
 				for (var topLevelDef : parsedDoc.topLevelDef()) {
 					final Protobuf3Parser.MessageDefContext msgDef = topLevelDef.messageDef();
@@ -94,7 +91,6 @@ public class RecordGenerator {
 					final Protobuf3Parser.EnumDefContext enumDef = topLevelDef.enumDef();
 					if (enumDef != null) {
 						final var enumName = enumDef.enumName().getText();
-						System.out.println("************* enumName = " + enumName);
 						final var javaFile = packageDir.resolve(enumName + ".java");
 						generateEnumFile(enumDef, javaPackage,enumName, javaFile.toFile(), packageMap);
 					}
@@ -115,11 +111,7 @@ public class RecordGenerator {
 		for(var item: enumDef.enumBody().enumElement()) {
 			if (item.enumField() != null && item.enumField().ident() != null) {
 				final var enumValueName = item.enumField().ident().getText();
-				System.out.println("	enumValueName = " + enumValueName);
-				System.out.println("	item.enumField().enumValueOptions() = " + item.enumField().enumValueOptions());
-				System.out.println("	item.enumField().getRuleIndex() = " + item.enumField().intLit().getText());
 				final var enumNumber = Integer.parseInt(item.enumField().intLit().getText());
-				System.out.println("	enumNumber = " + enumNumber);
 				boolean deprecated = false;
 				if (item.enumField().enumValueOptions() != null) {
 					for (var option : item.enumField().enumValueOptions().enumValueOption()) {
@@ -136,14 +128,10 @@ public class RecordGenerator {
 							.replaceAll("\n[\t\s]+\\*","\n"+FIELD_INDENT+" *") // clean up doc indenting
 							.replaceAll("/\\*\\*","/**\n"+FIELD_INDENT+" * <b>("+enumNumber+")</b>") // add field index
 						+ "\n";
-				System.out.println("item.enumField().docComment().getText() = [" + item.enumField().docComment().getText()+"]");
-				System.out.println("enumValueJavaDoc = [" + enumValueJavaDoc+"]");
 
 				maxIndex = Math.max(maxIndex, enumNumber);
 				enumValues.put(enumNumber, new EnumValue(enumValueName, false,enumValueJavaDoc));
 			} else if (item.optionStatement() != null){
-				System.out.println(
-						"item.optionStatement().optionName().getText() = [" + item.optionStatement().optionName().getText()+"]");
 				if ("deprecated".equals(item.optionStatement().optionName().getText())) {
 					deprectaed = "@Deprecated ";
 				} else {
@@ -163,9 +151,6 @@ public class RecordGenerator {
 				enumValuesCode.add(enumValue.javaDoc+deprecatedText+FIELD_INDENT+enumValue.name);
 			}
 		}
-		System.out.println("enumValuesCode = " + enumValuesCode.size());
-		System.out.println("enumValuesCode.stream().collect() = " + enumValuesCode.stream().collect(
-						Collectors.joining(",\n    ")));
 
 		try (FileWriter javaWriter = new FileWriter(javaFile)) {
 			javaWriter.write("""
@@ -256,8 +241,6 @@ public class RecordGenerator {
 					fieldDocs.put(fieldName, fieldNumComment + rawContent);
 				}
 			} else if (item.optionStatement() != null){
-				System.out.println(
-						"item.optionStatement().optionName().getText() = [" + item.optionStatement().optionName().getText()+"]");
 				if ("deprecated".equals(item.optionStatement().optionName().getText())) {
 					deprectaed = "@Deprecated ";
 				} else {
@@ -273,7 +256,6 @@ public class RecordGenerator {
 					javaDocComment.replaceAll("\n\s*\\*/","") :
 					"/**\n * "+javaRecordName;
 			recordJavaDoc += "\n *";
-			System.out.println("recordJavaDoc = " + recordJavaDoc);
 			for(var fieldDoc: fieldDocs.entrySet()) {
 				recordJavaDoc += "\n * @param "+fieldDoc.getKey()+" "+
 						fieldDoc.getValue().replaceAll("\n", "\n *         "+" ".repeat(fieldDoc.getKey().length()));
