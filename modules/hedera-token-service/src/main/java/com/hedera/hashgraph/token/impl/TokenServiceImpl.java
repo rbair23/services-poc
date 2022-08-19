@@ -2,6 +2,7 @@ package com.hedera.hashgraph.token.impl;
 
 import com.hedera.hashgraph.base.QueryHandler;
 import com.hedera.hashgraph.base.TransactionHandler;
+import com.hedera.hashgraph.token.TokenTransactionHandler;
 import com.hedera.hashgraph.token.impl.store.AccountStore;
 import com.hedera.hashgraph.token.TokenEndpoint;
 import com.hedera.hashgraph.token.TokenService;
@@ -29,7 +30,7 @@ public class TokenServiceImpl implements TokenService {
 	}
 
 	@Override
-	public TransactionHandler getTransactionHandler() {
+	public TokenTransactionHandler getTransactionHandler() {
 		return txHandler;
 	}
 
