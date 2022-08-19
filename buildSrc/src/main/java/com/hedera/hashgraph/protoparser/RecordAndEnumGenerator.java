@@ -4,7 +4,6 @@ import com.hedera.hashgraph.protoparser.grammar.Protobuf3Lexer;
 import com.hedera.hashgraph.protoparser.grammar.Protobuf3Parser;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,14 +19,13 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import static com.hedera.hashgraph.protoparser.Common.*;
+
 /**
  * Code generator that parses protobuf files and generates nice Java source for record files for each message type and
  * enum.
  */
 public class RecordAndEnumGenerator {
-
-	/** The base package where all java classes should be placed */
-	private static final String DEST_PACKAGE = "com.hedera.hashgraph.hapi.model";
 	/** The indent for fields, default 4 spaces */
 	private static final String FIELD_INDENT = " ".repeat(4);
 	/** Record for a enum value tempory storage */
@@ -44,58 +41,8 @@ public class RecordAndEnumGenerator {
 	 * @param destinationSrcDir the generated source directory to write files into
 	 * @throws IOException if there was a problem writing files
 	 */
-	static void generateRecordsAndEnums(File protoFile, File destinationSrcDir) throws IOException {
-		var packageMap = buildMesageToPackageMap(protoFile);
-		generate(protoFile, destinationSrcDir, packageMap);
-	}
-
-	/**
-	 * Builds a map from protobuf message to java package. This is used to produce imports for messages in other packages.
-	 *
-	 * @param protosFileOrDir a directory containing protobuf files or the protobuf file to parse and look for messages types in
-	 * @return map of message name to java package name
-	 */
-	private static Map<String,String> buildMesageToPackageMap(File protosFileOrDir) {
-		Map<String,String> packageMap = new HashMap<>();
-		buildMesageToPackageMap(protosFileOrDir,packageMap);
-		return packageMap;
-	}
-
-	/**
-	 * Builds onto map from protobuf message to java package. This is used to produce imports for messages in other packages.
-	 *
-	 * @param protosFileOrDir a directory containing protobuf files or the protobuf file to parse and look for messages types in
-	 * @param packageMap map of message name to java package name to add to
-	 */
-	private static void buildMesageToPackageMap(File protosFileOrDir, Map<String,String> packageMap) {
-		if (protosFileOrDir.isDirectory()) {
-			for (final File file : protosFileOrDir.listFiles()) {
-				buildMesageToPackageMap(file,packageMap);
-			}
-		} else if (protosFileOrDir.getName().endsWith(".proto")){
-			final String dirName = protosFileOrDir.getParentFile().getName().toLowerCase();
-			try (var input = new FileInputStream(protosFileOrDir)) {
-				final var lexer = new Protobuf3Lexer(CharStreams.fromStream(input));
-				final var parser = new Protobuf3Parser(new CommonTokenStream(lexer));
-				var parsedDoc = parser.proto();
-//				final String javaPackage = getJavaPackage(parsedDoc); // REMOVED because we want custom packages
-				final String javaPackage = computeJavaPackage(dirName);
-				for (var topLevelDef : parsedDoc.topLevelDef()) {
-					final var msgDef = topLevelDef.messageDef();
-					if (msgDef != null) {
-						var msgName = msgDef.messageName().getText();
-						packageMap.put(msgName, javaPackage);
-					}
-					final Protobuf3Parser.EnumDefContext enumDef = topLevelDef.enumDef();
-					if (enumDef != null) {
-						final var enumName = enumDef.enumName().getText();
-						packageMap.put(enumName, javaPackage);
-					}
-				}
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
+	static void generateRecordsAndEnums(File protoFile, File destinationSrcDir, final LookupHelper lookupHelper) throws IOException {
+		generate(protoFile, destinationSrcDir, lookupHelper);
 	}
 
 	/**
@@ -107,12 +54,12 @@ public class RecordAndEnumGenerator {
 	 * @param packageMap map of protobuf message types to java packages to use to build imports
 	 * @throws IOException if there was a problem writing generated files
 	 */
-	private static void generate(File protoDirOrFile, File destinationSrcDir, Map<String,String> packageMap) throws IOException {
+	private static void generate(File protoDirOrFile, File destinationSrcDir, final LookupHelper lookupHelper) throws IOException {
 		if (protoDirOrFile.isDirectory()) {
 			for (final File file : protoDirOrFile.listFiles()) {
 //				if (file.isDirectory() || file.getName().equals("timestamp.proto") || file.getName().equals("basic_types.proto")) {
 				if (file.isDirectory() || file.getName().endsWith(".proto")) {
-					generate(file, destinationSrcDir, packageMap);
+					generate(file, destinationSrcDir, lookupHelper);
 				}
 			}
 		} else {
@@ -122,19 +69,19 @@ public class RecordAndEnumGenerator {
 				final var parser = new Protobuf3Parser(new CommonTokenStream(lexer));
 				final Protobuf3Parser.ProtoContext parsedDoc = parser.proto();
 //				final String javaPackage = getJavaPackage(parsedDoc); // REMOVED because we want custom packages
-				final String javaPackage = computeJavaPackage(dirName);
+				final String javaPackage = computeJavaPackage(MODELS_DEST_PACKAGE, dirName);
 				final Path packageDir = destinationSrcDir.toPath().resolve(javaPackage.replace('.', '/'));
 				Files.createDirectories(packageDir);
 				for (var topLevelDef : parsedDoc.topLevelDef()) {
 					final Protobuf3Parser.MessageDefContext msgDef = topLevelDef.messageDef();
 					if (msgDef != null) {
-						generateRecordFile(msgDef, javaPackage, packageDir, packageMap);
+						generateRecordFile(msgDef, javaPackage, packageDir, lookupHelper);
 					}
 					final Protobuf3Parser.EnumDefContext enumDef = topLevelDef.enumDef();
 					if (enumDef != null) {
-						final var enumName = enumDef.enumName().getText();
+						final var enumName = snakeToCamel(enumDef.enumName().getText(), true);
 						final var javaFile = packageDir.resolve(enumName + ".java");
-						generateEnumFile(enumDef, javaPackage,enumName, javaFile.toFile(), packageMap);
+						generateEnumFile(enumDef, javaPackage,enumName, javaFile.toFile(), lookupHelper);
 					}
 				}
 			}
@@ -151,7 +98,7 @@ public class RecordAndEnumGenerator {
 	 * @param packageMap map of message type to Java package for imports
 	 * @throws IOException if there was a problem writing generated code
 	 */
-	private static void generateEnumFile(Protobuf3Parser.EnumDefContext enumDef, String javaPackage, String enumName, File javaFile, Map<String,String> packageMap) throws IOException {
+	private static void generateEnumFile(Protobuf3Parser.EnumDefContext enumDef, String javaPackage, String enumName, File javaFile, final LookupHelper lookupHelper) throws IOException {
 		String javaDocComment = (enumDef.docComment()== null) ? "" :
 				enumDef.docComment().getText()
 						.replaceAll("\n \\*\s*\n","\n * <p>\n");
@@ -187,6 +134,7 @@ public class RecordAndEnumGenerator {
 			}
 		}
 		try (FileWriter javaWriter = new FileWriter(javaFile)) {
+			lookupHelper.addEnum(enumName);
 			javaWriter.write(
 				"package "+javaPackage+";\n"+
 					createEnum("", javaDocComment, deprectaed, enumName, maxIndex, enumValues)
@@ -207,7 +155,6 @@ public class RecordAndEnumGenerator {
 	 */
 	private static String createEnum(String indent, String javaDocComment, String deprectaed, String enumName,
 			int maxIndex, Map<Integer,EnumValue> enumValues) {
-
 		final List<String> enumValuesCode = new ArrayList<>(maxIndex);
 		for (int i = 0; i <= maxIndex; i++) {
 			final EnumValue enumValue = enumValues.get(i);
@@ -284,8 +231,9 @@ public class RecordAndEnumGenerator {
 	 * @param packageMap map of message type to Java package for imports
 	 * @throws IOException if there was a problem writing generated code
 	 */
-	private static void generateRecordFile(Protobuf3Parser.MessageDefContext msgDef, String javaPackage, Path packageDir, Map<String,String> packageMap) throws IOException {
+	private static void generateRecordFile(Protobuf3Parser.MessageDefContext msgDef, String javaPackage, Path packageDir, final LookupHelper lookupHelper) throws IOException {
 		final var javaRecordName = msgDef.messageName().getText();
+		System.out.println("====================== javaRecordName = " + javaRecordName);
 		final var javaFile = packageDir.resolve(javaRecordName + ".java");
 		String javaDocComment = (msgDef.docComment()== null) ? "" :
 				msgDef.docComment().getText()
@@ -297,43 +245,67 @@ public class RecordAndEnumGenerator {
 		final Set<String> imports = new TreeSet<>();
 		for(var item: msgDef.messageBody().messageElement()) {
 			if (item.messageDef() != null) { // process sub messages
-				generateRecordFile(item.messageDef(), javaPackage,packageDir,packageMap);
+				generateRecordFile(item.messageDef(), javaPackage,packageDir,lookupHelper);
 			} else if (item.oneof() != null) { // process one ofs
-				final var oneOfContext = item.oneof();
-				final var oneOfComment = oneOfContext.docComment().getText();
-				final String oneOfName = oneOfContext.oneofName().getText();
-				final Map<Integer,EnumValue> enumValues = new HashMap<>();
-				int minIndex = Integer.MAX_VALUE;
-				int maxIndex = 0;
-				for(var field: oneOfContext.oneofField()) {
-					final var fieldComment = field.docComment() == null ? "" : field.docComment().getText();
-					final var fieldName = field.fieldName().getText();
-					final var fieldType = field.type_().getText();
-					final var fieldNumber = Integer.parseInt(field.fieldNumber().intLit().getText());
-					boolean deprecated = false;
-					if (field.fieldOptions() != null) {
-						for (var option : field.fieldOptions().fieldOption()) {
-							if ("deprecated".equals(option.optionName().getText())) {
-								deprecated = true;
-							} else {
-								System.err.println("Unhandled Option on emum: "+item.optionStatement().getText());
+				OneOfField oneOfField = new OneOfField(item.oneof(),javaRecordName, lookupHelper);
+				{
+					final var oneOfContext = item.oneof();
+					final var oneOfComment = oneOfContext.docComment().getText();
+					final String oneOfName = oneOfContext.oneofName().getText();
+					final Map<Integer, EnumValue> enumValues = new HashMap<>();
+					int minIndex = Integer.MAX_VALUE;
+					int maxIndex = 0;
+					for (var field : oneOfContext.oneofField()) {
+						final var fieldComment = field.docComment() == null ? "" : field.docComment().getText();
+						final var fieldName = field.fieldName().getText();
+						final var fieldType = field.type_().getText();
+						final var fieldNumber = Integer.parseInt(field.fieldNumber().intLit().getText());
+						boolean deprecated = false;
+						if (field.fieldOptions() != null) {
+							for (var option : field.fieldOptions().fieldOption()) {
+								if ("deprecated".equals(option.optionName().getText())) {
+									deprecated = true;
+								} else {
+									System.err.println("Unhandled Option on emum: " + item.optionStatement().getText());
+								}
 							}
 						}
+						final String enumValueName = Character.isLowerCase(
+								fieldType.charAt(0)) || enumValues.values().stream().anyMatch(
+								ev -> ev.name.equals(fieldType)) ? capitalizeFirstLetter(fieldName) : fieldType;
+						minIndex = Math.min(minIndex, fieldNumber);
+						maxIndex = Math.max(maxIndex, fieldNumber);
+						System.out.println("---> "+fieldNumber+" == "+new EnumValue(enumValueName, deprecated, fieldComment)+" c="+Character.isLowerCase(
+								fieldType.charAt(0))+"  m="+enumValues.values().stream().anyMatch(
+								ev -> ev.name.equals(fieldType))+" fieldType="+fieldType);
 					}
-					final String enumValueName = Character.isLowerCase(fieldType.charAt(0)) || enumValues.values().stream().anyMatch(ev -> ev.name.equals(fieldType)) ? capitalizeFirstLetter(fieldName) : fieldType;
-					minIndex = Math.min(minIndex,fieldNumber);
-					maxIndex = Math.max(maxIndex,fieldNumber);
-					enumValues.put(fieldNumber, new EnumValue(enumValueName,deprecated,fieldComment));
 				}
-				final String enumName = capitalizeFirstLetter(oneOfName)+"OneOfType";
+
+				int minIndex = oneOfField.fields().get(0).fieldNumber();
+				int maxIndex = oneOfField.fields().get(oneOfField.fields().size()-1).fieldNumber();
+				final Map<Integer,EnumValue> enumValues = new HashMap<>();
+				for(final Field field: oneOfField.fields()) {
+					final String fieldType = field.protobufFieldType();
+//TODO?					final String enumValueName = Character.isLowerCase(fieldType.charAt(0)) || field.isOptional() ||  enumValues.values().stream().anyMatch(ev -> ev.name.equals(fieldType)) ? capitalizeFirstLetter(field.name()) : fieldType;
+					final String enumValueName = snakeToCamel(field.name(), true);
+					enumValues.put(field.fieldNumber(), new EnumValue(enumValueName,field.depricated(),field.comment()));
+
+					System.out.println("***> "+field.fieldNumber()+" == "+new EnumValue(enumValueName,field.depricated(),field.comment())+
+							" c="+Character.isLowerCase(fieldType.charAt(0))+" m="+ enumValues.values().stream().anyMatch(ev -> ev.name.equals(fieldType))+
+							" fieldType="+fieldType);
+				}
+
+				final String enumName = snakeToCamel(oneOfField.name(), true)+"OneOfType";
 				final String enumComment = """
 									/**
-									 * Enum for the type of "%s" oneof value 
-									 */""".formatted(oneOfName);
+									 * Enum for the type of "%s" oneof value
+									 */""".formatted(oneOfField.name());
+				lookupHelper.addEnum(enumName);
 				final String enumString = createEnum(FIELD_INDENT,enumComment ,"",enumName,maxIndex,enumValues);
 				oneofEnums.add(enumString);
-				fields.add(FIELD_INDENT+"OneOf<"+enumName+"> "+snakeToCamel(oneOfName, false));
-				fieldDocs.add(new FieldDoc(snakeToCamel(oneOfName, false), "<b>("+minIndex+" to "+maxIndex+")</b> "+ cleanJavaDocComment(oneOfComment)));
+				final String oneOfNameCamelCase = snakeToCamel(oneOfField.name(), false);
+				fields.add(FIELD_INDENT+oneOfField.computeJavaFieldType()+" "+oneOfNameCamelCase);
+				fieldDocs.add(new FieldDoc(oneOfNameCamelCase, "<b>("+minIndex+" to "+maxIndex+")</b> "+ cleanJavaDocComment(oneOfField.comment())));
 				imports.add("com.hedera.hashgraph.hapi");
 			} else if (item.mapField() != null) { // process map fields
 				System.err.println("Encountered a mapField that was not handled in "+javaRecordName);
@@ -341,6 +313,8 @@ public class RecordAndEnumGenerator {
 				// reserved are not needed
 			} else if (item.field() != null && item.field().fieldName() != null) {
 				final var fieldName = item.field().fieldName().getText();
+				final var fieldRepeated = item.field().REPEATED() != null;
+				System.out.println("fieldName = " + fieldName+"  fieldRepeated = " + fieldRepeated);
 				final Protobuf3Parser.Type_Context typeContext = item.field().type_();
 				var fieldType = "Object";
 				if (typeContext.messageType() != null) {
@@ -365,9 +339,9 @@ public class RecordAndEnumGenerator {
 							break;
 						default:
 							fieldType = typeContext.messageType().messageName().getText();
-							final String importPackage = packageMap.get(fieldType);
+							final String importPackage = lookupHelper.getModelPackage(fieldType);
 							if (importPackage != null && !javaPackage.equals(importPackage)) {
-								imports.add(packageMap.get(fieldType));
+								imports.add(lookupHelper.getModelPackage(fieldType));
 							}
 					}
 				} else if (typeContext.INT32() != null || typeContext.UINT32() != null || typeContext.SINT32() != null) {
@@ -384,6 +358,18 @@ public class RecordAndEnumGenerator {
 					fieldType = "boolean";
 				} else if (typeContext.BYTES() != null) {
 					fieldType = "byte[]";
+				}
+				// handle repeated
+				if (fieldRepeated) {
+					fieldType = switch(fieldType) {
+						case "int" -> "List<Integer>";
+						case "long" -> "List<Long>";
+						case "float" -> "List<Float>";
+						case "double" -> "List<Double>";
+						case "boolean" -> "List<Boolean>";
+						default -> "List<"+fieldType+">";
+					};
+					imports.add("java.util");
 				}
 				final var fieldNumber = Integer.parseInt(item.field().fieldNumber().getText());
 				fields.add(FIELD_INDENT+fieldType + " " + snakeToCamel(fieldName, false));
@@ -437,75 +423,5 @@ public class RecordAndEnumGenerator {
 					oneofEnums.stream().collect(Collectors.joining("\n    "))
 			));
 		}
-	}
-
-	/**
-	 * Clean up a java doc style comment removing all the "*" etc.
-	 *
-	 * @param fieldComment raw Java doc style comment
-	 * @return clean multi-line content of the comment
-	 */
-	private static String cleanJavaDocComment(String fieldComment) {
-		return fieldComment
-				.replaceAll("/\\*\\*[\n\r\s\t]*\\*[\t\s]*|[\n\r\s\t]*\\*/","") // remove java doc
-				.replaceAll("\n\s+\\*\s+","\n"); // remove indenting and *
-	}
-
-	/**
-	 * Extract Java package option from parsed protobuf document
-	 *
-	 * @param parsedDoc parseed protobuf source
-	 * @return the java package option if set or empty string
-	 */
-	private static String getJavaPackage(Protobuf3Parser.ProtoContext parsedDoc) {
-		String packageName = "";
-		for(var option: parsedDoc.optionStatement()){
-			if ("java_package".equals(option.optionName().getText())) {
-				packageName = option.constant().getText().replace("\"","");
-			}
-		}
-		return packageName;
-	}
-
-
-	/**
-	 * Compute a destination Java package based on parent directory of the protobuf file
-	 *
-	 * @param dirName The name of the parent protobuf directory
-	 * @return complete java package
-	 */
-	@NotNull
-	private static String computeJavaPackage(final String dirName) {
-		return DEST_PACKAGE + (dirName.equals("services") ? "" : "." + dirName);
-	}
-
-	/**
-	 * Make sure first charachter of a string is upper case
-	 *
-	 * @param name string input who's first charachter can be upper or lower case
-	 * @return name with first charachter converted to upper case
-	 */
-	private static String capitalizeFirstLetter(String name) {
-		if (name.length() > 0) {
-			if (name.chars().allMatch(Character::isUpperCase)) {
-				return Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase();
-			} else {
-				return Character.toUpperCase(name.charAt(0)) + name.substring(1);
-			}
-		}
-		return name;
-	}
-
-	/**
-	 * Convert names like "hello_world" to "HelloWorld" or "helloWorld" depening on firstUpper. Also handles special case
-	 * like "HELLO_WORLD" to same output as "hello_world, while "HelloWorld_Two" still becomes "helloWorldTwo".
-	 *
-	 * @param name input name in snake case
-	 * @param firstUpper if true then first char is upper case otherwise it is lower
-	 * @return out name in camel case
-	 */
-	private static String snakeToCamel(String name, boolean firstUpper) {
-		final String out =  Arrays.stream(name.split("_")).map(RecordAndEnumGenerator::capitalizeFirstLetter).collect(Collectors.joining(""));
-		return firstUpper ? out : Character.toLowerCase(out.charAt(0)) + out.substring(1);
 	}
 }

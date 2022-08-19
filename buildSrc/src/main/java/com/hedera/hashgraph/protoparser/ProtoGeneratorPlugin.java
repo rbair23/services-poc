@@ -21,6 +21,8 @@ public abstract class ProtoGeneratorPlugin extends DefaultTask {
 		public void perform() throws IOException {
 			final File protoDir = getProtoSrcDir().getAsFile().get();
 			final File generatedDir = getGeneratedFileDir().getAsFile().get();
-			RecordAndEnumGenerator.generateRecordsAndEnums(protoDir, generatedDir);
+			final LookupHelper lookupHelper = new LookupHelper(protoDir);
+			RecordAndEnumGenerator.generateRecordsAndEnums(protoDir, generatedDir, lookupHelper);
+			ParserGenerator.generateParsers(protoDir, generatedDir, lookupHelper);
 		}
 	}

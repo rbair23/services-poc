@@ -50,7 +50,7 @@ public class TransactionIngestWorkflow {
         //    throttles way back on step 1, but we need to verify whether the account is
         //    a privileged account (less than 0.0.100) and if so skip throttles. Without
         //    a way to authenticate the payload any earlier than step 3, we have to do it now.
-        checkThrottles(txBody.data().type());
+        checkThrottles(txBody.data().kind());
         // 5. If we get past the throttles, then it is finally time to submit to the platform
         //    for consensus. Way cool!
         // TODO Actually I need to send the original byte[]. Once again, I want the marshallers to not parse...
