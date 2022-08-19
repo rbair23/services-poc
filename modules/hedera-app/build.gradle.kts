@@ -10,6 +10,8 @@ dependencies {
     implementation(project(":modules:hedera-proto-api"))
     implementation(project(":modules:hedera-file-service"))
     implementation(project(":modules:hedera-file-service-api"))
+    implementation(project(":modules:hedera-token-service"))
+    implementation(project(":modules:hedera-token-service-api"))
     implementation(libs.helidon.grpc.server)
     implementation(libs.io.grpc)
     implementation(libs.proto.parse)

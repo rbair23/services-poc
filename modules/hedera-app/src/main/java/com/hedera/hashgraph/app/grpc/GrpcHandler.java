@@ -5,6 +5,7 @@ import com.hedera.hashgraph.app.workflows.ingest.TransactionIngestWorkflow;
 import com.hedera.hashgraph.hapi.model.TransactionResponse;
 import com.hedera.hashgraph.hapi.model.base.Transaction;
 import com.hedera.hashgraph.hapi.proto.parsers.TransactionParser;
+import com.hedera.hashgraph.token.AccountService;
 import io.grpc.MethodDescriptor;
 import io.grpc.stub.ServerCalls;
 import io.helidon.grpc.core.MarshallerSupplier;
@@ -17,19 +18,12 @@ import java.util.Objects;
 public class GrpcHandler {
 	private static final HederaMarshallerSupplier MARSHALLER_SUPPLIER = new HederaMarshallerSupplier();
 
-	private final ThreadLocal<IngestContext> contextThreadLocal = new ThreadLocal<>() {
-		@Override
-		protected IngestContext initialValue() {
-			// Oh crap, or do I take a factory? Hopefully this context can create its own stuff and not need
-			// much from the outside world...
-			return new IngestContext();
-		}
-	};
-
+	private final ThreadLocal<IngestContext> contextThreadLocal;
 	private final TransactionIngestWorkflow ingestWorkflow;
 
 	public GrpcHandler(TransactionIngestWorkflow ingestWorkflow) {
 		this.ingestWorkflow = Objects.requireNonNull(ingestWorkflow);
+		this.contextThreadLocal = ThreadLocal.withInitial(IngestContext::new);
 	}
 
 	public ServiceBuilder service(String serviceName) {
