@@ -4,7 +4,50 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9349e3b6-8d98-4742-a41f-0c2fee1a6652" name="Changes" comment="I think complete record and enum code generation" />
+    <list default="true" id="9349e3b6-8d98-4742-a41f-0c2fee1a6652" name="Changes" comment="Clean up duplicate files and setup to actually be able to run">
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/workflows/ingest/IngestContext.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/workflows/ingest/TransactionIngestWorkflow.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-app/src/test/java/blar/SimpleTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/java/com/hedera/hashgraph/hapi/proto/parsers/TransactionParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/java/com/hedera/hashgraph/hapi/schema/TransactionSchema.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/hedera-proto-api/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/AccountID.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/Duration.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/ResponseCode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/SignatureMap.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/SignedTransaction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/Timestamp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/TimestampSeconds.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/Transaction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/TransactionBody.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/TransactionID.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/TransactionRecord.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/com/hedera/hashgraph/base/model/TransactionResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-app-api/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/Hedera.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/Hedera.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/grpc/GrpcHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/grpc/GrpcHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/grpc/SignedTransactionMarshaller.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/grpc/TransactionMarshaller.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/grpc/TransactionMarshaller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/grpc/TransactionResponseMarshaller.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/com/hedera/hashgraph/app/grpc/TransactionResponseMarshaller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-app/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-app/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service-api/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-file-service-api/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file/FileEndpoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file/FileEndpoint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file/FileTransactionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file/FileTransactionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file/model/FileCreateTransactionBody.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file/model/FileID.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file/model/FileInfo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-file-service/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/FileEndpointImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/FileEndpointImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/FileTransactionHandlerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/FileTransactionHandlerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/serde/FileCreateTransactionBodyParser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/store/FileLeaf.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/store/FileLeaf.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/store/FileStore.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/store/FileStore.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/hedera-proto-api/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/modules/hedera-proto-api/build.gradle.kts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -152,9 +195,14 @@
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
     "RunOnceActivity.go.migrated.go.modules.settings": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
     "WebServerToolWindowFactoryState": "false",
     "go.import.settings.migrated": "true",
-    "last_opened_file_path": "/Users/jasperpotts/.m2",
+    "last_opened_file_path": "/Users/richardbair/Projects/services-poc/modules/hedera-proto-api/src/main/java",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
@@ -170,11 +218,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/modules/hedera-proto-api/src/main/java" />
       <recent name="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java/com/hedera/hashgraph/file" />
       <recent name="$PROJECT_DIR$/modules/hedera-file-service/src/main/java" />
       <recent name="$PROJECT_DIR$/modules/hedera-file-service-api/src/main/java" />
       <recent name="$PROJECT_DIR$/modules/hedera-app-api/src/main/java" />
-      <recent name="$PROJECT_DIR$/modules/hedera-file-service/src/main/java/com/hedera/hashgraph" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/modules/hedera-proto/src/main/proto/services/base" />
@@ -184,6 +232,63 @@
     </key>
   </component>
   <component name="RunManager" selected="Gradle.services-poc [clean build]">
+    <configuration name="Hedera" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.hedera.hashgraph.app.Hedera" />
+      <module name="services-poc.modules.hedera-app.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.hedera.hashgraph.app.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SimpleTest.test" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":modules:hedera-app:test" />
+            <option value="--tests" />
+            <option value="&quot;blar.SimpleTest.test&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="services-poc [clean build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
     <configuration name="services-poc [clean build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -206,27 +311,6 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="services-poc [clean]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="clean" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <method v="2" />
-    </configuration>
     <configuration name="services-poc [jar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -239,27 +323,6 @@
         <option name="taskNames">
           <list>
             <option value="jar" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <method v="2" />
-    </configuration>
-    <configuration name="services-poc:modules:hedera-app-api [protoGenerator]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/modules/hedera-app-api" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="protoGenerator" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -291,19 +354,19 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Application.Hedera" />
+      <item itemvalue="Gradle.SimpleTest.test" />
       <item itemvalue="Gradle.services-poc:modules:hedera-proto-api [jar]" />
       <item itemvalue="Gradle.services-poc [clean build]" />
-      <item itemvalue="Gradle.services-poc [clean]" />
       <item itemvalue="Gradle.services-poc [jar]" />
-      <item itemvalue="Gradle.services-poc:modules:hedera-app-api [protoGenerator]" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.services-poc [clean build]" />
+        <item itemvalue="Gradle.SimpleTest.test" />
+        <item itemvalue="Application.Hedera" />
         <item itemvalue="Gradle.services-poc [jar]" />
         <item itemvalue="Gradle.services-poc:modules:hedera-proto-api [jar]" />
-        <item itemvalue="Gradle.services-poc [clean]" />
-        <item itemvalue="Gradle.services-poc:modules:hedera-app-api [protoGenerator]" />
       </list>
     </recent_temporary>
   </component>
@@ -321,6 +384,7 @@
       <workItem from="1660165340750" duration="5101000" />
       <workItem from="1660260607346" duration="13026000" />
       <workItem from="1660347879182" duration="48636000" />
+      <workItem from="1660858600818" duration="10611000" />
     </task>
     <task id="LOCAL-00001" summary="Fixing build">
       <created>1660344545386</created>
@@ -395,7 +459,8 @@
     <MESSAGE value="Complete records generation" />
     <MESSAGE value="Remove prints" />
     <MESSAGE value="I think complete record and enum code generation" />
-    <option name="LAST_COMMIT_MESSAGE" value="I think complete record and enum code generation" />
+    <MESSAGE value="Clean up duplicate files and setup to actually be able to run" />
+    <option name="LAST_COMMIT_MESSAGE" value="Clean up duplicate files and setup to actually be able to run" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

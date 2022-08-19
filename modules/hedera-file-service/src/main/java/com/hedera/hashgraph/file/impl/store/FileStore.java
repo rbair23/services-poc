@@ -1,9 +1,9 @@
 package com.hedera.hashgraph.file.impl.store;
 
 import com.hedera.hashgraph.base.Store;
-import com.hedera.hashgraph.file.model.FileCreateTransactionBody;
-import com.hedera.hashgraph.file.model.FileID;
-import com.hedera.hashgraph.file.model.FileInfo;
+import com.hedera.hashgraph.hapi.model.FileID;
+import com.hedera.hashgraph.hapi.model.file.FileCreateTransactionBody;
+import com.hedera.hashgraph.hapi.model.file.FileInfo;
 import com.swirlds.merkle.map.MerkleMap;
 
 // NOTE: This is NOT exported from the module
@@ -16,7 +16,8 @@ public class FileStore implements Store {
 
 	public FileInfo loadFileInfo(FileID id) {
 		// TODO validate id has the right shard/realm and isn't null.
-		return loadFileInfo(id.num());
+//		return loadFileInfo(id.num());
+		return null;
 	}
 
 	public FileInfo loadFileInfo(long fileNum) {

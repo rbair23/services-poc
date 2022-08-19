@@ -1,100 +1,88 @@
 package com.hedera.hashgraph.app.grpc;
 
-import com.hedera.hashgraph.base.model.ResponseCode;
-import com.hedera.hashgraph.base.model.SignedTransaction;
-import com.hedera.hashgraph.base.model.Transaction;
-import com.hedera.hashgraph.base.model.TransactionBody;
-import com.hedera.hashgraph.base.model.TransactionResponse;
+import com.hedera.hashgraph.app.workflows.ingest.IngestContext;
+import com.hedera.hashgraph.app.workflows.ingest.TransactionIngestWorkflow;
+import com.hedera.hashgraph.hapi.model.TransactionResponse;
+import com.hedera.hashgraph.hapi.model.base.Transaction;
+import com.hedera.hashgraph.hapi.proto.parsers.TransactionParser;
 import io.grpc.MethodDescriptor;
-import io.grpc.ServerCall;
-import io.grpc.ServerMethodDefinition;
-import io.grpc.ServerServiceDefinition;
-import io.grpc.Status;
+import io.grpc.stub.ServerCalls;
+import io.helidon.grpc.core.MarshallerSupplier;
+import io.helidon.grpc.server.ServiceDescriptor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class GrpcHandler {
+	private static final HederaMarshallerSupplier MARSHALLER_SUPPLIER = new HederaMarshallerSupplier();
 
-	public static EndpointBuilder endpoint(String serviceName) {
-		return new EndpointBuilder(serviceName);
+	private final ThreadLocal<IngestContext> contextThreadLocal = new ThreadLocal<>() {
+		@Override
+		protected IngestContext initialValue() {
+			// Oh crap, or do I take a factory? Hopefully this context can create its own stuff and not need
+			// much from the outside world...
+			return new IngestContext();
+		}
+	};
+
+	private final TransactionIngestWorkflow ingestWorkflow;
+
+	public GrpcHandler(TransactionIngestWorkflow ingestWorkflow) {
+		this.ingestWorkflow = Objects.requireNonNull(ingestWorkflow);
 	}
 
-	public static final class EndpointBuilder {
-		private List<ServerMethodDefinition<?, ?>> methods = new ArrayList<>();
-		private final String serviceName;
+	public ServiceBuilder service(String serviceName) {
+		return new ServiceBuilder(serviceName);
+	}
 
-		private EndpointBuilder(String serviceName) {
+	public final class ServiceBuilder {
+		private final String serviceName;
+		private final Map<String, ServerCalls.UnaryMethod<Transaction, TransactionResponse>> methods = new HashMap<>();
+
+		private ServiceBuilder(String serviceName) {
 			// TODO Validate input
 			this.serviceName = serviceName;
 		}
 
-		public EndpointBuilder signedTransaction(String methodName, Function<TransactionBody, ResponseCode> handler) {
-			methods.add(ServerMethodDefinition.create(
-					MethodDescriptor.<SignedTransaction, TransactionResponse>newBuilder()
-							.setFullMethodName(serviceName + "/" + methodName)
-							.setSampledToLocalTracing(true)
-							.setType(MethodDescriptor.MethodType.UNARY)
-							.setRequestMarshaller(new SignedTransactionMarshaller())
-							.setResponseMarshaller(new TransactionResponseMarshaller())
-							.build(),
-					(call, headers) -> new ServerCall.Listener<>() {
-						@Override
-						public void onMessage(final SignedTransaction tx) {
-							// First do the basic validation of the Transaction / SignedTransaction.
-							// TODO Some validation on signatures on "tx"
-							// Then deserialize the TransactionBody
-							// TODO actually parse the bytes to get the TransactionBody
-//							final var body = new TransactionBody(null, null, 0, null, null, null);
-							// Then validate the TransactionBody
-							// TODO do some validation on the transaction body. Does the account exist? Right shard/realm?
-							// Then delegate to the service
-//							final var response = handler.apply(body);
-//							System.out.println(response);
-							// TODO Map response to the right code, and add trailers
-//							call.close(Status.fromCode(Status.Code.OK), null);
-						}
-					}
-			));
+		public ServiceBuilder transaction(String methodName) {
+			methods.put(methodName, (tx, responseObserver) -> {
+				try {
+					ingestWorkflow.run(contextThreadLocal.get(), tx);
+					// TODO Create a transaction response. From workflow? Not sure. Then return it below.
+					responseObserver.onNext(null); // Return this to the client
+					responseObserver.onCompleted(); // Shut it down, fool.
+				} catch (Throwable th) {
+					// TODO Log this. Something awful happened? Maybe normal? Not sure.
+					responseObserver.onError(th);
+				}
+			});
 			return this;
 		}
 
-		public EndpointBuilder transaction(String methodName, Function<TransactionBody, ResponseCode> handler) {
-			methods.add(ServerMethodDefinition.create(
-					MethodDescriptor.<Transaction, TransactionResponse>newBuilder()
-							.setFullMethodName(serviceName + "/" + methodName)
-							.setSampledToLocalTracing(true)
-							.setType(MethodDescriptor.MethodType.UNARY)
-							.setRequestMarshaller(new TransactionMarshaller())
-							.setResponseMarshaller(new TransactionResponseMarshaller())
-							.build(),
-					(call, headers) -> new ServerCall.Listener<>() {
-						@Override
-						public void onMessage(final Transaction message) {
-							// First do the basic validation of the Transaction / SignedTransaction.
-							// Then deserialize the TransactionBody
-							// Then validate the TransactionBody
-							// Then delegate to the service
-							final var response = handler.apply(null);
-							System.out.println(response);
-							// TODO Map response to the right code, and add trailers
-//							call.close(Status.fromCode(Status.Code.OK), null);
-						}
-					}
-			));
-			return this;
-		}
-
-		public ServerServiceDefinition build() {
-			final var builder = ServerServiceDefinition
-					.builder(serviceName);
-
-			for (final var method : methods) {
-				builder.addMethod(method);
-			}
-
+		public ServiceDescriptor build() {
+			final var builder = ServiceDescriptor.builder(null, serviceName);
+			methods.forEach((k, v) -> builder.unary(k, v, rules -> rules.marshallerSupplier(MARSHALLER_SUPPLIER)));
 			return builder.build();
+		}
+	}
+
+	private static final class HederaMarshallerSupplier implements MarshallerSupplier {
+		private final Map<Class<?>, MethodDescriptor.Marshaller<?>> marshallerMap =
+				new HashMap<>();
+
+		HederaMarshallerSupplier() {
+			marshallerMap.put(Transaction.class, new TransactionMarshaller());
+			marshallerMap.put(TransactionResponse.class, new TransactionResponseMarshaller());
+			// TODO Add support for queries here
+		}
+
+		@Override
+		public <T> MethodDescriptor.Marshaller<T> get(Class<T> clazz) {
+			// TODO Note that this isn't safe across classloaders -- i.e. if a clazz is passed in from another
+			//      classloader, then boom. Probably not a problem, but should be documented somewhere...
+			//noinspection unchecked
+			return (MethodDescriptor.Marshaller<T>) marshallerMap.get(clazz);
 		}
 	}
 }

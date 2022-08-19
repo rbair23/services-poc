@@ -1,10 +1,10 @@
 package com.hedera.hashgraph.file.impl;
 
 import com.hedera.hashgraph.base.ChangeManager;
-import com.hedera.hashgraph.base.model.TransactionRecord;
 import com.hedera.hashgraph.file.FileTransactionHandler;
-import com.hedera.hashgraph.file.model.FileCreateTransactionBody;
 import com.hedera.hashgraph.file.impl.store.FileStore;
+import com.hedera.hashgraph.hapi.model.TransactionRecord;
+import com.hedera.hashgraph.hapi.model.file.FileCreateTransactionBody;
 
 // todo how to do rollback and commit? especially across modules
 public class FileTransactionHandlerImpl implements FileTransactionHandler {

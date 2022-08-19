@@ -1,6 +1,6 @@
 package com.hedera.hashgraph.file.impl.store;
 
-import com.hedera.hashgraph.file.model.FileID;
+import com.hedera.hashgraph.hapi.model.FileID;
 import com.swirlds.common.io.streams.SerializableDataInputStream;
 import com.swirlds.common.io.streams.SerializableDataOutputStream;
 import com.swirlds.common.merkle.MerkleLeaf;

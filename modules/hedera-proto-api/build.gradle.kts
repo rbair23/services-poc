@@ -3,10 +3,10 @@ plugins {
 }
 
 description = "Hedera Protobuf API"
-//
-//dependencies {
-//    implementation(libs.proto.parse)
-//}
+
+dependencies {
+    implementation(libs.proto.parse)
+}
 
 
 // ===== PROTOBUF GENERATION ===========================================================================================

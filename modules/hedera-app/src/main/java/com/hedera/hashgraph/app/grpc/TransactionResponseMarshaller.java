@@ -1,14 +1,15 @@
 package com.hedera.hashgraph.app.grpc;
 
-import com.hedera.hashgraph.base.model.TransactionResponse;
+import com.hedera.hashgraph.hapi.model.TransactionResponse;
 import io.grpc.MethodDescriptor;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 public class TransactionResponseMarshaller implements MethodDescriptor.Marshaller<TransactionResponse> {
 	@Override
 	public InputStream stream(final TransactionResponse value) {
-		return null;
+		return new ByteArrayInputStream(new byte[0]);
 	}
 
 	@Override
