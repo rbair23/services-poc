@@ -11,10 +11,15 @@ public interface AccountService extends Service {
 	public AccountEndpoint getEndpoint();
 
 	@Override
-	public AccountTransactionHandler getTransactionHandler();
+	public AccountTransactionHandler getTransactionHandler(); // TODO ALWAYS works on the current working state
 
 	@Override
-	public QueryHandler getQueryHandler();
+	public QueryHandler getQueryHandler(); // TODO ALWAYS works on last signed state
 
+	/**
+	 * TODO CRITICAL THIS MUST KNOW WHETHER TO LOOK UP AN ACCOUNT ON LAST SIGNED STATE OR CURRENT WORKING STATE
+	 * @param accountID
+	 * @return
+	 */
 	public Account lookupAccount(AccountID accountID);
 }
