@@ -1,5 +1,6 @@
 package com.hedera.hashgraph.file.impl.store;
 
+import com.hedera.hashgraph.base.MerkleRegistry;
 import com.hedera.hashgraph.base.Store;
 import com.hedera.hashgraph.hapi.model.FileID;
 import com.hedera.hashgraph.hapi.model.file.FileCreateTransactionBody;
@@ -10,8 +11,9 @@ import com.swirlds.merkle.map.MerkleMap;
 public class FileStore implements Store {
 	private final MerkleMap<FileID, FileLeaf> mmap;
 
-	public FileStore(MerkleMap<FileID, FileLeaf> mmap) {
-		this.mmap = mmap; // todo validate
+	public FileStore(MerkleRegistry registry) {
+//		this.mmap = registry.getOrRegister("FileServiceStore")
+		this.mmap = null;
 	}
 
 	public FileInfo loadFileInfo(FileID id) {
