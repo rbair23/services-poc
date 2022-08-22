@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
  */
 public class Common {
 	/** The indent for fields, default 4 spaces */
-
 	public static final String FIELD_INDENT = " ".repeat(4);
 	/** The base package where all parser java classes should be placed */
 	public static final String PARSERS_DEST_PACKAGE = "com.hedera.hashgraph.hapi.parser";
@@ -129,25 +128,4 @@ public class Common {
 				.replaceAll("\n\s+\\*\s+","\n"); // remove indenting and *
 	}
 
-	/**
-	 * Check if a messgae type is one of the protobuf built in primative value types
-	 *
-	 * @param messageType message type string
-	 * @return true if special value type
-	 */
-	public static boolean isMessageTypeSpecialProtobufValueType(String messageType) {
-		if (messageType == null) return false;
-		return switch(messageType) {
-			case "StringValue" -> true;
-			case "Int32Value" -> true;
-			case "UInt32Value" -> true;
-			case "SInt32Value" -> true;
-			case "Int64Value" -> true;
-			case "UInt64Value" -> true;
-			case "SInt64Value" -> true;
-			case "BoolValue" -> true;
-			case "BytesValue" -> true;
-			default -> false;
-		};
-	}
 }

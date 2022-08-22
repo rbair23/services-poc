@@ -5,7 +5,6 @@ import com.hedera.hashgraph.protoparser.grammar.Protobuf3Parser;
 import java.util.Set;
 
 import static com.hedera.hashgraph.protoparser.Common.camelToUpperSnake;
-import static com.hedera.hashgraph.protoparser.Common.isMessageTypeSpecialProtobufValueType;
 import static com.hedera.hashgraph.protoparser.Common.snakeToCamel;
 
 /**
@@ -30,7 +29,7 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 						lookupHelper.getModelPackage(fieldContext.type_().messageType().messageName().getText()),
 				(fieldContext.type_().messageType() == null || fieldContext.type_().messageType().messageName().getText() == null) ? null :
 						lookupHelper.getParserPackage(fieldContext.type_().messageType().messageName().getText()),
-				fieldContext.docComment() == null ? "" : fieldContext.docComment().getText(),
+				fieldContext.docComment() == null ? null : fieldContext.docComment().getText(),
 				getDepricatedOption(fieldContext.fieldOptions()),
 				null
 		);
@@ -46,7 +45,7 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 						lookupHelper.getModelPackage(fieldContext.type_().messageType().messageName().getText()),
 				(fieldContext.type_().messageType() == null) ? null :
 						lookupHelper.getParserPackage(fieldContext.type_().messageType().messageName().getText()),
-				fieldContext.docComment() == null ? "" : fieldContext.docComment().getText(),
+				fieldContext.docComment() == null ? null : fieldContext.docComment().getText(),
 				getDepricatedOption(fieldContext.fieldOptions()),
 				parent
 		);
@@ -67,11 +66,15 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 	}
 
 	@Override
-	public boolean isOptional() { // Move logic for checking built in types to common
+	public boolean optional() { // Move logic for checking built in types to common
 		return type == SingleField.FieldType.MESSAGE && (
 				messageType.equals("StringValue") ||
 				messageType.equals("Int32Value") ||
+				messageType.equals("UInt32Value") ||
 				messageType.equals("SInt32Value") ||
+				messageType.equals("Int64Value") ||
+				messageType.equals("UInt64Value") ||
+				messageType.equals("SInt64Value") ||
 				messageType.equals("BoolValue") ||
 				messageType.equals("BytesValue")
 		);
@@ -82,7 +85,7 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 		return type == SingleField.FieldType.MESSAGE ? messageType : type.javaType;
 	}
 
-	public String computeJavaFieldType() {
+	public String javaFieldType() {
 		String fieldType = switch(type) {
 			case MESSAGE -> messageType;
 			case ENUM -> snakeToCamel(messageType, true);
@@ -110,15 +113,13 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 		return fieldType;
 	}
 
-	public void addAllNeededImports(Set<String> imports) {
-		if (repeated || isOptional()) imports.add("java.util");
-		if (messageTypeModelPackage != null && messageTypeModelPackage.contains("null")) System.err.println("%%%%%%%% messageTypeModelPackage = "+messageTypeModelPackage);
-		if (messageTypeParserPackage != null && messageTypeParserPackage.contains("null")) System.err.println("%%%%%%%% messageTypeParserPackage = "+messageTypeParserPackage);
-		if (messageTypeModelPackage != null) imports.add(messageTypeModelPackage);
-		if (messageTypeParserPackage != null) imports.add(messageTypeParserPackage);
+	public void addAllNeededImports(Set<String> imports, boolean modelImports,boolean parserImports) {
+		if (repeated || optional()) imports.add("java.util");
+		if (messageTypeModelPackage != null && modelImports) imports.add(messageTypeModelPackage);
+		if (messageTypeParserPackage != null && parserImports) imports.add(messageTypeParserPackage);
 	}
 
-	public String getParseCode() {
+	public String parseCode() {
 		if (repeated && type == FieldType.MESSAGE) {
 			return "new %s().parse(input)".formatted(messageType + ParserGenerator.PASER_JAVA_FILE_SUFFIX);
 		} else if (type == FieldType.MESSAGE) {
@@ -129,7 +130,7 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 	}
 
 	public String javaDefault() {
-		if (isOptional()) {
+		if (optional()) {
 			return "Optional.empty()";
 		} else if (repeated) {
 			return "null";
@@ -149,8 +150,7 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 
 	public String parserFieldsSetMethodCase() {
 		final String fieldNameToSet = parent != null ? parent.name() : name;
-//		final String valueToSet = parent != null ? "new OneOf<>(input)" : "input";
-		if (isMessageTypeSpecialProtobufValueType(messageType)) {
+		if (optional()) {
 			if (parent != null) { // one of
 				return "case %d -> this.%s = new OneOf<>(%d,%s.%sOneOfType.%s,Optional.of(input));"
 						.formatted(fieldNumber, fieldNameToSet, fieldNumber,  parent.parentMessageName(), snakeToCamel(parent.name(), true),camelToUpperSnake(name));

@@ -7,23 +7,76 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.hedera.hashgraph.protoparser.Common.capitalizeFirstLetter;
+import static com.hedera.hashgraph.protoparser.Common.snakeToCamel;
 
 /**
  * Interface for SingleFields and OneOfFields
  */
 public interface Field {
 
+	/**
+	 * Is this field a repeated field. Repeated fields are lists of values rather than a single value.
+	 *
+	 * @return true if this field is a list and false if it is a single value
+	 */
 	public boolean repeated();
-	public FieldType type();
+
+	/**
+	 * Get the field number, the number of the field in the parent message
+	 *
+	 * @return this fields number
+	 */
 	public int fieldNumber();
+
+	/**
+	 * Get this fields name in orginal case and format
+	 *
+	 * @return this fields name
+	 */
 	public String name();
 
+	/**
+	 * Get this fields name converted to camel case with the first leter upper case
+	 *
+	 * @return this fields name converted
+	 */
+	public default String nameCamelFirstUpper() {
+		return snakeToCamel(name(),true);
+	}
+
+	/**
+	 * Get this fields name converted to camel case with the first leter lower case
+	 *
+	 * @return this fields name converted
+	 */
+	public default String nameCamelFirstLower() {
+		return snakeToCamel(name(),false);
+	}
+
+	/**
+	 * Get the field type for this field, the field type is independent of repeated
+	 *
+	 * @return this fields type
+	 */
+	public FieldType type();
+
+	/**
+	 * Get the protobuf field type for this field
+	 *
+	 * @return this fields type in protobuf format
+	 */
 	public String protobufFieldType();
-	public String computeJavaFieldType();
 
-	public void addAllNeededImports(Set<String> imports);
+	/**
+	 * Get the Java field type for this field
+	 *
+	 * @return this fields type in Java format
+	 */
+	public String javaFieldType();
 
-	public String getParseCode();
+	public void addAllNeededImports(Set<String> imports, boolean modelImports,boolean parserImports);
+
+	public String parseCode();
 
 	public String javaDefault();
 
@@ -35,7 +88,7 @@ public interface Field {
 		return null;
 	};
 	public boolean depricated();
-	public default boolean isOptional() {
+	public default boolean optional() {
 		return false;
 	}
 

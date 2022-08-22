@@ -115,7 +115,7 @@ public class ParserGenerator {
 			} else if (item.oneof() != null) { // process one ofs
 				final var field = new OneOfField(item.oneof(), modelClassName, lookupHelper);
 				fields.add(field);
-				field.addAllNeededImports(imports);
+				field.addAllNeededImports(imports, true, true);
 			} else if (item.mapField() != null) { // process map fields
 				throw new IllegalStateException("Encountered a mapField that was not handled in "+ parserClassName);
 			} else if (item.reserved() != null) { // process reserved
@@ -123,7 +123,7 @@ public class ParserGenerator {
 			} else if (item.field() != null && item.field().fieldName() != null) {
 				final var field = new SingleField(item.field(), lookupHelper);
 				fields.add(field);
-				field.addAllNeededImports(imports);
+				field.addAllNeededImports(imports, true, true);
 			} else if (item.optionStatement() != null){
 				// no needed for now
 			} else {
@@ -174,7 +174,7 @@ public class ParserGenerator {
 						modelClassName,
 						parserClassName,
 						fields.stream().map(field -> {
-							return "    private %s %s = %s;".formatted(field.computeJavaFieldType(), field.name(), field.javaDefault());
+							return "    private %s %s = %s;".formatted(field.javaFieldType(), field.name(), field.javaDefault());
 						}).collect(Collectors.joining("\n")),
 						generateParseMethods(modelClassName, fields),
 						generateGetFieldDefinition(modelClassName)+"\n"+generateResetMethod(fields),
@@ -185,7 +185,13 @@ public class ParserGenerator {
 	}
 
 	private static String generateGetFieldDefinition(final String modelClassName) {
-		return 	"""		
+		return 	"""			   
+						    /**
+						     * get the FieldDefinition for given field number
+						     *
+						     * @param fieldNumber the field number to lookup definition for
+						     * @return field definition for field with given index or null if no field exists.
+						     */
 							@Override
 							protected FieldDefinition getFieldDefinition(final int fieldNumber) {
 								return getField(fieldNumber);
@@ -200,16 +206,19 @@ public class ParserGenerator {
 	 * @return string of source code for reset method
 	 */
 	private static String generateResetMethod(final List<Field> fields) {
-		final String resetFieldsCode = fields.stream()
-				.map(field -> {
-					return "this.%s = %s;".formatted(field.name(), field.javaDefault());
-				})
-				.collect(Collectors.joining("\n        "));
 		return 	"""
-							public void reset() {
+						    /**
+						     * Reset all fields to default values so we can start another parse job
+						     */
+							private void reset() {
 								%s
 							}
-						""".formatted(resetFieldsCode);
+						""".formatted(
+								fields.stream()
+										.map(field -> {
+											return "this.%s = %s;".formatted(field.name(), field.javaDefault());
+										})
+										.collect(Collectors.joining("\n        ")));
 	}
 
 	/** Array of input types to generate parse() methods for */
@@ -232,7 +241,7 @@ public class ParserGenerator {
 				.map(inputType ->
 					"""
 							public %s parse(%s protobuf) throws %sMalformedProtobufException {
-								%s
+								reset();
 								super.start(protobuf);
 								return new %s(%s);
 							}
@@ -240,7 +249,6 @@ public class ParserGenerator {
 							modelClassName,
 							inputType,
 							inputType.equals("InputStream")? "IOException, " : "",
-							resetFieldsCode,
 							modelClassName,
 							fields.stream().map(Field::name).collect(Collectors.joining(", "))
 					))

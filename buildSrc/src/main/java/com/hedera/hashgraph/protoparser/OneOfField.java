@@ -2,6 +2,7 @@ package com.hedera.hashgraph.protoparser;
 
 import com.hedera.hashgraph.protoparser.grammar.Protobuf3Parser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,32 +10,43 @@ import java.util.stream.Collectors;
 import static com.hedera.hashgraph.protoparser.Common.capitalizeFirstLetter;
 import static com.hedera.hashgraph.protoparser.Common.snakeToCamel;
 
-public class OneOfField implements Field {
-	private final String parentMessageName;
-	private final String name;
-	private final String comment;
-	private final List<Field> fields;
+/**
+ * A implementation of Field for OneOf fields 
+ */
+public record OneOfField(
+		String parentMessageName,
+		String name,
+		String comment,
+		List<Field> fields,
+		boolean repeated,
+		boolean depricated
+) implements Field {
 
 	public OneOfField(final Protobuf3Parser.OneofContext oneOfContext, final String parentMessageName, final LookupHelper lookupHelper) {
-		this.parentMessageName = parentMessageName;
-		this.name = oneOfContext.oneofName().getText();
-		this.comment = oneOfContext.docComment().getText();
-		this.fields = oneOfContext.oneofField().stream()
-				.map(field -> new SingleField(field, this, lookupHelper)).collect(
-				Collectors.toList());
+		this(parentMessageName,
+			oneOfContext.oneofName().getText(),
+			oneOfContext.docComment().getText(),
+			new ArrayList<>(oneOfContext.oneofField().size()),
+			false,
+			getDepricatedOption(oneOfContext.optionStatement())
+		);
+		for(var field: oneOfContext.oneofField()) {
+			fields.add(new SingleField(field, this, lookupHelper));
+		}
 	}
 
-	public String parentMessageName() {
-		return parentMessageName;
-	}
-
-	public List<Field> fields() {
-		return fields;
-	}
-
-	@Override
-	public boolean repeated() {
-		return false;
+	private static boolean getDepricatedOption(List<Protobuf3Parser.OptionStatementContext> optionContext) {
+		boolean deprecated = false;
+		if (optionContext != null) {
+			for (var option : optionContext) {
+				if ("deprecated".equals(option.optionName().getText())) {
+					deprecated = true;
+				} else {
+					System.err.println("Unhandled Option on oneof: "+option.optionName().getText());
+				}
+			}
+		}
+		return deprecated;
 	}
 
 	@Override
@@ -48,41 +60,36 @@ public class OneOfField implements Field {
 	}
 
 	@Override
-	public String name() {
-		return name;
-	}
-
-	@Override
 	public String protobufFieldType() {
 		return "oneof";
 	}
 
 	@Override
-	public String computeJavaFieldType() {
+	public String javaFieldType() {
 		String commonType = null;
 		boolean allSame = true;
 		for(var field: fields) {
 			if (commonType == null) {
-				commonType =  field.computeJavaFieldType();
-			} else if (commonType != field.computeJavaFieldType()) {
+				commonType =  field.javaFieldType();
+			} else if (commonType != field.javaFieldType()) {
 				allSame = false;
 				break;
 			}
 		}
 		commonType = allSame ? commonType : "Object";
-		return "OneOf<"+parentMessageName+"."+ snakeToCamel(name, true)+"OneOfType, "+commonType+">";
+		return "OneOf<"+parentMessageName+"."+ nameCamelFirstUpper()+"OneOfType, "+commonType+">";
 	}
 
 	@Override
-	public void addAllNeededImports(final Set<String> imports) {
+	public void addAllNeededImports(final Set<String> imports, boolean modelImports,boolean parserImports) {
 		imports.add("com.hedera.hashgraph.hapi");
 		for(var field:fields) {
-			field.addAllNeededImports(imports);
+			field.addAllNeededImports(imports, modelImports, parserImports);
 		}
 	}
 
 	@Override
-	public String getParseCode() {
+	public String parseCode() {
 		return null;
 	}
 
@@ -109,9 +116,4 @@ public class OneOfField implements Field {
 	public boolean depricated() {
 		return false; // TODO is there a better answer here
 	}
-
-//	public String getEnumClassName() {
-//		return "%s.%sOneOfType".formatted(capitalizeFirstLetter(parent.name()), capitalizeFirstLetter(name))
-//
-//	}
 }

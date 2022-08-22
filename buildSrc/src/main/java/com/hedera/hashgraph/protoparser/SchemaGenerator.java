@@ -106,14 +106,13 @@ public class SchemaGenerator {
 		final List<Field> fields = new ArrayList<>();
 		final Set<String> imports = new TreeSet<>();
 		final String moidelJavaPackage = computeJavaPackage(MODELS_DEST_PACKAGE, dirName);
-//		imports.add(moidelJavaPackage);
 		for(var item: msgDef.messageBody().messageElement()) {
 			if (item.messageDef() != null) { // process sub messages
 				generateRecordFile(item.messageDef(), dirName, javaPackage,packageDir,lookupHelper);
 			} else if (item.oneof() != null) { // process one ofs
 				final var field = new OneOfField(item.oneof(), modelClassName, lookupHelper);
 				fields.add(field);
-				field.addAllNeededImports(imports);
+				field.addAllNeededImports(imports, true, false);
 			} else if (item.mapField() != null) { // process map fields
 				throw new IllegalStateException("Encountered a mapField that was not handled in "+ parserClassName);
 			} else if (item.reserved() != null) { // process reserved
@@ -121,7 +120,6 @@ public class SchemaGenerator {
 			} else if (item.field() != null && item.field().fieldName() != null) {
 				final var field = new SingleField(item.field(), lookupHelper);
 				fields.add(field);
-				field.addAllNeededImports(imports);
 			} else if (item.optionStatement() != null){
 				// no needed for now
 			} else {
