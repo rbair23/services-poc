@@ -134,7 +134,6 @@ public class RecordAndEnumGenerator {
 			}
 		}
 		try (FileWriter javaWriter = new FileWriter(javaFile)) {
-			lookupHelper.addEnum(enumName);
 			javaWriter.write(
 				"package "+javaPackage+";\n"+
 					createEnum("", javaDocComment, deprectaed, enumName, maxIndex, enumValues)
@@ -165,7 +164,7 @@ public class RecordAndEnumGenerator {
 								.replaceAll("/\\*\\*","/**\n"+FIELD_INDENT+" * <b>("+i+")</b>") // add field index
 								+ "\n";
 				final String deprecatedText = enumValue.deprecated ? FIELD_INDENT+"@Deprecated\n" : "";
-				enumValuesCode.add(cleanedEnumComment+deprecatedText+FIELD_INDENT+snakeToCamel(enumValue.name, true)+"("+i+")");
+				enumValuesCode.add(cleanedEnumComment+deprecatedText+FIELD_INDENT+camelToUpperSnake(enumValue.name)+"("+i+")");
 			}
 		}
 		return """
@@ -216,7 +215,7 @@ public class RecordAndEnumGenerator {
 							enumName,
 							enumName,
 							enumValues.entrySet().stream().map((entry) -> {
-								return "			case "+entry.getKey()+" -> "+snakeToCamel(entry.getValue().name, true)+";";
+								return "			case "+entry.getKey()+" -> "+camelToUpperSnake(entry.getValue().name)+";";
 							}).collect(Collectors.joining("\n"))
 					)
 					.replaceAll("\n","\n"+indent);
@@ -233,7 +232,6 @@ public class RecordAndEnumGenerator {
 	 */
 	private static void generateRecordFile(Protobuf3Parser.MessageDefContext msgDef, String javaPackage, Path packageDir, final LookupHelper lookupHelper) throws IOException {
 		final var javaRecordName = msgDef.messageName().getText();
-		System.out.println("====================== javaRecordName = " + javaRecordName);
 		final var javaFile = packageDir.resolve(javaRecordName + ".java");
 		String javaDocComment = (msgDef.docComment()== null) ? "" :
 				msgDef.docComment().getText()
@@ -275,9 +273,6 @@ public class RecordAndEnumGenerator {
 								ev -> ev.name.equals(fieldType)) ? capitalizeFirstLetter(fieldName) : fieldType;
 						minIndex = Math.min(minIndex, fieldNumber);
 						maxIndex = Math.max(maxIndex, fieldNumber);
-						System.out.println("---> "+fieldNumber+" == "+new EnumValue(enumValueName, deprecated, fieldComment)+" c="+Character.isLowerCase(
-								fieldType.charAt(0))+"  m="+enumValues.values().stream().anyMatch(
-								ev -> ev.name.equals(fieldType))+" fieldType="+fieldType);
 					}
 				}
 
@@ -286,13 +281,7 @@ public class RecordAndEnumGenerator {
 				final Map<Integer,EnumValue> enumValues = new HashMap<>();
 				for(final Field field: oneOfField.fields()) {
 					final String fieldType = field.protobufFieldType();
-//TODO?					final String enumValueName = Character.isLowerCase(fieldType.charAt(0)) || field.isOptional() ||  enumValues.values().stream().anyMatch(ev -> ev.name.equals(fieldType)) ? capitalizeFirstLetter(field.name()) : fieldType;
-					final String enumValueName = snakeToCamel(field.name(), true);
-					enumValues.put(field.fieldNumber(), new EnumValue(enumValueName,field.depricated(),field.comment()));
-
-					System.out.println("***> "+field.fieldNumber()+" == "+new EnumValue(enumValueName,field.depricated(),field.comment())+
-							" c="+Character.isLowerCase(fieldType.charAt(0))+" m="+ enumValues.values().stream().anyMatch(ev -> ev.name.equals(fieldType))+
-							" fieldType="+fieldType);
+					enumValues.put(field.fieldNumber(), new EnumValue(field.name(),field.depricated(),field.comment()));
 				}
 
 				final String enumName = snakeToCamel(oneOfField.name(), true)+"OneOfType";
@@ -300,7 +289,6 @@ public class RecordAndEnumGenerator {
 									/**
 									 * Enum for the type of "%s" oneof value
 									 */""".formatted(oneOfField.name());
-				lookupHelper.addEnum(enumName);
 				final String enumString = createEnum(FIELD_INDENT,enumComment ,"",enumName,maxIndex,enumValues);
 				oneofEnums.add(enumString);
 				final String oneOfNameCamelCase = snakeToCamel(oneOfField.name(), false);
@@ -314,7 +302,6 @@ public class RecordAndEnumGenerator {
 			} else if (item.field() != null && item.field().fieldName() != null) {
 				final var fieldName = item.field().fieldName().getText();
 				final var fieldRepeated = item.field().REPEATED() != null;
-				System.out.println("fieldName = " + fieldName+"  fieldRepeated = " + fieldRepeated);
 				final Protobuf3Parser.Type_Context typeContext = item.field().type_();
 				var fieldType = "Object";
 				if (typeContext.messageType() != null) {

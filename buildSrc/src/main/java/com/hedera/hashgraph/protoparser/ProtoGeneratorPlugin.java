@@ -23,6 +23,7 @@ public abstract class ProtoGeneratorPlugin extends DefaultTask {
 			final File generatedDir = getGeneratedFileDir().getAsFile().get();
 			final LookupHelper lookupHelper = new LookupHelper(protoDir);
 			RecordAndEnumGenerator.generateRecordsAndEnums(protoDir, generatedDir, lookupHelper);
+			SchemaGenerator.generateSchemas(protoDir, generatedDir, lookupHelper);
 			ParserGenerator.generateParsers(protoDir, generatedDir, lookupHelper);
 		}
 	}

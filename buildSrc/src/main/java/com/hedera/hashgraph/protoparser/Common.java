@@ -13,10 +13,11 @@ public class Common {
 	/** The indent for fields, default 4 spaces */
 
 	public static final String FIELD_INDENT = " ".repeat(4);
-	/** The base package where all java classes should be placed */
-	public static final String PARSERS_DEST_PACKAGE = "com.hedera.hashgraph.hapi.parsers.proto";
-
-	/** The base package where all java classes should be placed */
+	/** The base package where all parser java classes should be placed */
+	public static final String PARSERS_DEST_PACKAGE = "com.hedera.hashgraph.hapi.parser";
+	/** The base package where all schema java classes should be placed */
+	public static final String SCHEMAS_DEST_PACKAGE = "com.hedera.hashgraph.hapi.schema";
+	/** The base package where all model java classes should be placed */
 	public static final String MODELS_DEST_PACKAGE = "com.hedera.hashgraph.hapi.model";
 
 	/**
@@ -96,6 +97,13 @@ public class Common {
 	 * @return output name in upper snake case
 	 */
 	public static String camelToUpperSnake(String name) {
+
+		System.out.println("camelToUpperSnake name = " + name+" already="+(name.chars().allMatch(c -> Character.isUpperCase(c) || Character.isDigit(c) || c == '_'))+" has_under="+(name.chars().anyMatch(c -> c == '_'))+" -- "+name.toUpperCase());
+		// check if already camel upper
+		if (name.chars().allMatch(c -> Character.isUpperCase(c) || Character.isDigit(c) || c == '_')) return name;
+		// check if already has underscores, then just capitalize
+		if (name.chars().anyMatch(c -> c == '_')) return name.toUpperCase();
+		// else convert
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < name.length(); i++) {
 			final char c = name.charAt(i);
@@ -106,6 +114,7 @@ public class Common {
 				buf.append(Character.toUpperCase(c));
 			}
 		}
+		System.out.println("	camelToUpperSnake name = " + name+" > "+buf);
 		return buf.toString();
 	}
 

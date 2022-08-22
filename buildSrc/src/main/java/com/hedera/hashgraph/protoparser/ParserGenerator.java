@@ -28,8 +28,8 @@ import static com.hedera.hashgraph.protoparser.Common.*;
  */
 public class ParserGenerator {
 
+	/** Suffix for parser java classes */
 	public static final String PASER_JAVA_FILE_SUFFIX = "ProtoParser";
-	private static Map<Integer, EnumValue> enumValues;
 
 	/** Record for a enum value tempory storage */
 	private record EnumValue(String name, boolean deprecated, String javaDoc) {}
@@ -42,6 +42,7 @@ public class ParserGenerator {
 	 *
 	 * @param protoDir The protobuf file to parse
 	 * @param destinationSrcDir the generated source directory to write files into
+	 * @param lookupHelper helper for global context
 	 * @throws IOException if there was a problem writing files
 	 */
 	static void generateParsers(File protoDir, File destinationSrcDir, final LookupHelper lookupHelper) throws IOException {
@@ -55,12 +56,11 @@ public class ParserGenerator {
 	 *
 	 * @param protoDirOrFile directory of protobuf files or indervidual protobuf file
 	 * @param destinationSrcDir The destination source directory to generate into
-	 * @param packageMap map of protobuf message types to java packages to use to build imports
+	 * @param lookupHelper helper for global context
 	 * @throws IOException if there was a problem writing generated files
 	 */
 	private static void generate(File protoDirOrFile, File destinationSrcDir,
 			final LookupHelper lookupHelper) throws IOException {
-
 		if (protoDirOrFile.isDirectory()) {
 			for (final File file : protoDirOrFile.listFiles()) {
 				if (file.isDirectory() || file.getName().endsWith(".proto")) {
@@ -79,7 +79,7 @@ public class ParserGenerator {
 				for (var topLevelDef : parsedDoc.topLevelDef()) {
 					final Protobuf3Parser.MessageDefContext msgDef = topLevelDef.messageDef();
 					if (msgDef != null) {
-						generateRecordFile(msgDef, dirName, javaPackage, packageDir, lookupHelper);
+						generateParserFile(msgDef, dirName, javaPackage, packageDir, lookupHelper);
 					}
 				}
 			}
@@ -87,18 +87,18 @@ public class ParserGenerator {
 	}
 
 	/**
-	 * Generate a Java record from protobuf message type
+	 * Generate a Java parser from protobuf message type
 	 *
 	 * @param msgDef the parsed message
-	 * @param javaPackage the package the record will be placed in
-	 * @param packageDir the package directory for writing into
-	 * @param packageMap map of message type to Java package for imports
-	 * @throws IOException if there was a problem writing generated code
+	 * @param dirName the directory name of the dir containing the protobuf file
+	 * @param javaPackage the java package the record file should be generated in
+	 * @param packageDir the output package directory
+	 * @param lookupHelper helper for global context
+	 * @throws IOException If there was a problem writing record file
 	 */
-	private static void generateRecordFile(Protobuf3Parser.MessageDefContext msgDef, String dirName, String javaPackage,
+	private static void generateParserFile(Protobuf3Parser.MessageDefContext msgDef, String dirName, String javaPackage,
 			Path packageDir, final LookupHelper lookupHelper) throws IOException {
 		final var modelClassName = msgDef.messageName().getText();
-		System.out.println("************************** modelClassName = " + modelClassName);
 		final var parserClassName = modelClassName+ PASER_JAVA_FILE_SUFFIX;
 		final var javaFile = packageDir.resolve(parserClassName + ".java");
 		String javaDocComment = (msgDef.docComment()== null) ? "" :
@@ -111,7 +111,7 @@ public class ParserGenerator {
 		imports.add(moidelJavaPackage);
 		for(var item: msgDef.messageBody().messageElement()) {
 			if (item.messageDef() != null) { // process sub messages
-				generateRecordFile(item.messageDef(), dirName, javaPackage,packageDir,lookupHelper);
+				generateParserFile(item.messageDef(), dirName, javaPackage,packageDir,lookupHelper);
 			} else if (item.oneof() != null) { // process one ofs
 				final var field = new OneOfField(item.oneof(), modelClassName, lookupHelper);
 				fields.add(field);
@@ -136,21 +136,18 @@ public class ParserGenerator {
 					package %s;
 					
 					import com.hedera.hashgraph.protoparse.FieldDefinition;
-					import com.hedera.hashgraph.protoparse.FieldType;
 					import com.hedera.hashgraph.protoparse.MalformedProtobufException;
 					import com.hedera.hashgraph.protoparse.ProtoParser;
 					%s
 					import java.io.IOException;
 					import java.io.InputStream;
 					import java.nio.ByteBuffer;
+					import static %s.*;
 
 					/**
 					 * Parser for %s model object from protobuf format
 					 */
 					public class %s extends ProtoParser {
-						// -- FIELD DEFINITIONS ---------------------------------------------
-						
-					%s
 					
 						// -- REUSED TEMP STATE FIELDS --------------------------------------
 						
@@ -163,39 +160,45 @@ public class ParserGenerator {
 						// -- OTHER METHODS -------------------------------------------------
 						
 					%s
+					
+						// -- FIELD SET METHODS ---------------------------------------------
+						
+					%s
 					}
 					""".formatted(
 						javaPackage,
 						imports.isEmpty() ? "" : imports.stream()
 								.filter(input -> !input.equals(javaPackage))
 								.collect(Collectors.joining(".*;\nimport ","\nimport ",".*;\n")),
+						computeJavaPackage(SCHEMAS_DEST_PACKAGE, dirName) + "." + modelClassName+ SchemaGenerator.SCHEMA_JAVA_FILE_SUFFIX,
 						modelClassName,
 						parserClassName,
-						fields.stream().map(field -> field.schemaFieldsDef()).collect(Collectors.joining("\n")),
 						fields.stream().map(field -> {
 							return "    private %s %s = %s;".formatted(field.computeJavaFieldType(), field.name(), field.javaDefault());
 						}).collect(Collectors.joining("\n")),
 						generateParseMethods(modelClassName, fields),
-						generateGetFieldDefinition(fields)+"\n"+generateResetMethod(fields)+"\n"+generateFieldSetMethods(fields)
+						generateGetFieldDefinition(modelClassName)+"\n"+generateResetMethod(fields),
+						generateFieldSetMethods(fields)
 					)
 			);
 		}
 	}
 
-	private static String generateGetFieldDefinition(final List<Field> fields) {
+	private static String generateGetFieldDefinition(final String modelClassName) {
 		return 	"""		
 							@Override
 							protected FieldDefinition getFieldDefinition(final int fieldNumber) {
-								return switch(fieldNumber) {
-								    %s
-									default -> throw new AssertionError("Unknown field type!! Test bug? Or intentional...?");
-								};
+								return getField(fieldNumber);
 							}
-						""".formatted(fields.stream()
-											.map(Field::parserGetFieldsDefCase)
-											.collect(Collectors.joining("\n            ")));
+						""".formatted(modelClassName);
 	}
 
+	/**
+	 * Generate source code for reset method
+	 *
+	 * @param fields list of all the fields
+	 * @return string of source code for reset method
+	 */
 	private static String generateResetMethod(final List<Field> fields) {
 		final String resetFieldsCode = fields.stream()
 				.map(field -> {
@@ -209,7 +212,16 @@ public class ParserGenerator {
 						""".formatted(resetFieldsCode);
 	}
 
+	/** Array of input types to generate parse() methods for */
 	private static final String[] PARSE_INPUT_TYPES = new String[]{"byte[]","ByteBuffer","InputStream"};
+
+	/**
+	 * Generate source code for parse methods
+	 *
+	 * @param modelClassName the class name for model class that parse methods will return
+	 * @param fields list of all the fields
+	 * @return string of source code for parse methods
+	 */
 	private static String generateParseMethods(final String modelClassName, final List<Field> fields) {
 		final String resetFieldsCode = fields.stream()
 				.map(field -> {
@@ -235,6 +247,9 @@ public class ParserGenerator {
 				.collect(Collectors.joining("\n"));
 	}
 
+	/**
+	 * Enum for all the set field methods that can be in a parser
+	 */
 	private enum FieldMethodTypes{
 		intField(false, FieldType.INT32, FieldType.UINT32, FieldType.SINT32),
 		longField(false, FieldType.INT64, FieldType.UINT64, FieldType.SINT64),
@@ -282,6 +297,13 @@ public class ParserGenerator {
 	}
 
 
+	/**
+	 * Generate the source code for field set methods that are callbacks from parser to build up local state inside
+	 * parser class.
+	 *
+	 * @param fields list of all fields in record
+	 * @return string of methods code
+	 */
 	private static String generateFieldSetMethods(final List<Field> fields) {
 		// Flatten oneof fields
 		final List<Field> flattenedFields = new ArrayList<>();
@@ -292,8 +314,6 @@ public class ParserGenerator {
 				flattenedFields.add(field);
 			}
 		}
-		// TODO Handle oneof sub fields, each one as own line
-		// TODO Need to handle options as base type not object
 		return Arrays.stream(FieldMethodTypes.values())
 				.filter(fieldMethodType -> flattenedFields.stream().filter(field -> fieldMethodType.matches(field)).count() > 0)
 				.map(fieldMethodType ->
