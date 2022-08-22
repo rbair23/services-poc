@@ -1,5 +1,7 @@
 package com.hedera.hashgraph.app.grpc;
 
+import com.hedera.hashgraph.app.SessionContext;
+import com.hedera.hashgraph.app.workflows.ingest.IngestWorkflow;
 import com.hedera.hashgraph.hapi.parsers.proto.TransactionBodyProtoParser;
 import com.hedera.hashgraph.hapi.parsers.proto.base.SignedTransactionProtoParser;
 import com.hedera.hashgraph.hapi.parsers.proto.base.TransactionProtoParser;
@@ -24,9 +26,9 @@ final class TransactionMethod implements ServerCalls.UnaryMethod<byte[], byte[]>
     /**
      * The pipeline contains all the steps needed for handling the ingestion of a transaction.
      */
-    private final GrpcIngestPipeline pipeline;
+    private final IngestWorkflow pipeline;
 
-    TransactionMethod(GrpcIngestPipeline pipeline) {
+    TransactionMethod(IngestWorkflow pipeline) {
         this.pipeline = Objects.requireNonNull(pipeline);
     }
 

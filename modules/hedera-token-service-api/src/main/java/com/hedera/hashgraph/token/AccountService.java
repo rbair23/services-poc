@@ -5,10 +5,13 @@ import com.hedera.hashgraph.hapi.model.AccountID;
 import com.hedera.hashgraph.token.entity.Account;
 
 public interface AccountService extends Service {
+	AccountTransactionHandler transactionHandler();
+	AccountPreHandler preHandler();
+
 	/**
 	 * TODO CRITICAL THIS MUST KNOW WHETHER TO LOOK UP AN ACCOUNT ON LAST SIGNED STATE OR CURRENT WORKING STATE
 	 * @param accountID
 	 * @return
 	 */
-	public Account lookupAccount(AccountID accountID);
+	Account lookupAccount(AccountID accountID);
 }

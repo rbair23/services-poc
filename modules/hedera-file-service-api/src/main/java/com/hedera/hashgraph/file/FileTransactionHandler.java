@@ -6,5 +6,5 @@ import com.hedera.hashgraph.hapi.model.file.FileCreateTransactionBody;
 
 // todo how to do rollback and commit? especially across modules
 public interface FileTransactionHandler {
-	TransactionRecord createFile(ChangeManager cm, FileCreateTransactionBody tx);
+	TransactionRecord handleFileCreate(ChangeManager cm, FileCreateTransactionBody tx);
 }

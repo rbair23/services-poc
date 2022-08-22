@@ -1,8 +1,7 @@
-package com.hedera.hashgraph.app.grpc;
+package com.hedera.hashgraph.app.workflows.ingest;
 
-import com.hedera.hashgraph.app.workflows.ingest.IngestChecker;
-import com.hedera.hashgraph.app.workflows.ingest.PreCheckException;
-import com.hedera.hashgraph.app.workflows.ingest.ThrottleException;
+import com.hedera.hashgraph.app.grpc.BackPressureException;
+import com.hedera.hashgraph.app.SessionContext;
 import com.hedera.hashgraph.hapi.model.TransactionBody;
 import com.hedera.hashgraph.hapi.model.TransactionID;
 import com.hedera.hashgraph.hapi.model.TransactionResponse;
@@ -40,7 +39,7 @@ import java.util.Objects;
  *
  * </ol>
  */
-final class GrpcIngestPipeline {
+public final class IngestWorkflow {
     /**
      * Used to check validity of different things at different steps.
      */
@@ -65,7 +64,7 @@ final class GrpcIngestPipeline {
      *                       keys, and balance. Cannot be null.
      * @param ingestChecker Implements all the non-protobuf related semantic checks for ingestion. Cannot be null.
      */
-    GrpcIngestPipeline(Platform platform, AccountService accountService, IngestChecker ingestChecker) {
+    public IngestWorkflow(Platform platform, AccountService accountService, IngestChecker ingestChecker) {
         this.platform = Objects.requireNonNull(platform);
         this.accountService = Objects.requireNonNull(accountService);
         this.checker = Objects.requireNonNull(ingestChecker);
@@ -80,7 +79,7 @@ final class GrpcIngestPipeline {
      * @param txBytes The raw protobuf transaction bytes. Must be a transaction object.
      * @return The {@link TransactionResponse} as a protobuf byte[].
      */
-    byte[] handleTransaction(SessionContext session, byte[] txBytes) {
+    public byte[] handleTransaction(SessionContext session, byte[] txBytes) {
         try {
             // 0. Parse the transaction object from the txBytes (protobuf)
             final var tx = session.txParser().parse(txBytes);

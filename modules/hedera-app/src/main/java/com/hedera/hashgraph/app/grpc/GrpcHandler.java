@@ -1,6 +1,7 @@
 package com.hedera.hashgraph.app.grpc;
 
 import com.hedera.hashgraph.app.workflows.ingest.IngestChecker;
+import com.hedera.hashgraph.app.workflows.ingest.IngestWorkflow;
 import com.hedera.hashgraph.hapi.model.TransactionResponse;
 import com.hedera.hashgraph.hapi.model.base.Transaction;
 import com.hedera.hashgraph.token.AccountService;
@@ -33,7 +34,7 @@ public final class GrpcHandler {
 	 */
 	public GrpcHandler(Platform platform, AccountService accountService, IngestChecker ingestChecker) {
 		this.transactionMethod = new TransactionMethod(
-				new GrpcIngestPipeline(platform, accountService, ingestChecker));
+				new IngestWorkflow(platform, accountService, ingestChecker));
 	}
 
 	/**

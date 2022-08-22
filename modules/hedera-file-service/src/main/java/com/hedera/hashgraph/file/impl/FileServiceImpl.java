@@ -1,12 +1,15 @@
 package com.hedera.hashgraph.file.impl;
 
 import com.hedera.hashgraph.base.MerkleRegistry;
+import com.hedera.hashgraph.file.FilePreHandler;
 import com.hedera.hashgraph.file.FileService;
+import com.hedera.hashgraph.file.FileTransactionHandler;
 import com.hedera.hashgraph.file.impl.store.FileStore;
 
 public class FileServiceImpl implements FileService {
 	private final FileStore store;
-	private final FileTransactionHandlerImpl txHandler;
+	private final FileTransactionHandler txHandler;
+	private final FilePreHandler preHandler;
 
 	public FileServiceImpl(
 			/* I should get passed the merkel internal representing FileService, on which I attach my own merkle node with my own types*/
@@ -16,5 +19,16 @@ public class FileServiceImpl implements FileService {
 		//      create it, I can just pass it in. If it isn't there, I need to create it and add it.
 		store = new FileStore(registry);
 		txHandler = new FileTransactionHandlerImpl(store);
+		preHandler = new FilePreHandlerImpl();
+	}
+
+	@Override
+	public FilePreHandler preHandler() {
+		return preHandler;
+	}
+
+	@Override
+	public FileTransactionHandler transactionHandler() {
+		return txHandler;
 	}
 }
