@@ -26,17 +26,17 @@ final class TransactionMethod implements ServerCalls.UnaryMethod<byte[], byte[]>
     /**
      * The pipeline contains all the steps needed for handling the ingestion of a transaction.
      */
-    private final IngestWorkflow pipeline;
+    private final IngestWorkflow workflow;
 
-    TransactionMethod(IngestWorkflow pipeline) {
-        this.pipeline = Objects.requireNonNull(pipeline);
+    TransactionMethod(IngestWorkflow workflow) {
+        this.workflow = Objects.requireNonNull(workflow);
     }
 
     @Override
     public void invoke(byte[] txBytes, StreamObserver<byte[]> responseObserver) {
         try {
             final var session = SESSION_CONTEXT_THREAD_LOCAL.get();
-            final var responseBytes = pipeline.handleTransaction(session, txBytes);
+            final var responseBytes = workflow.handleTransaction(session, txBytes);
             responseObserver.onNext(responseBytes); // Return this to the client
             responseObserver.onCompleted(); // Shut it down.
         } catch (Throwable th) {

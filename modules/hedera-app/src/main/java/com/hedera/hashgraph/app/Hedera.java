@@ -7,9 +7,8 @@ import com.hedera.hashgraph.app.throttle.ThrottleAccumulatorImpl;
 import com.hedera.hashgraph.app.workflows.handle.HandleTransactionDispatcherImpl;
 import com.hedera.hashgraph.app.workflows.handle.HandleTransactionWorkflow;
 import com.hedera.hashgraph.app.workflows.ingest.IngestCheckerImpl;
-import com.hedera.hashgraph.app.workflows.prehandle.PreHandleDispatchImpl;
+import com.hedera.hashgraph.app.workflows.prehandle.PreHandleDispatcherImpl;
 import com.hedera.hashgraph.app.workflows.prehandle.PreHandleWorkflow;
-import com.hedera.hashgraph.base.FeeAccumulator;
 import com.hedera.hashgraph.base.MerkleRegistry;
 import com.hedera.hashgraph.base.ThrottleAccumulator;
 import com.hedera.hashgraph.file.impl.FileServiceImpl;
@@ -40,7 +39,7 @@ public class Hedera {
 
 		// Start up the platform
 		final var preHandleExecutor = Executors.newFixedThreadPool(5);
-		final var preHandleDispatcher = new PreHandleDispatchImpl(servicesAccessor);
+		final var preHandleDispatcher = new PreHandleDispatcherImpl(servicesAccessor);
 		final var preHandleWorkflow = new PreHandleWorkflow(
 				preHandleExecutor, servicesAccessor.accountService(), ingestChecker, preHandleDispatcher);
 

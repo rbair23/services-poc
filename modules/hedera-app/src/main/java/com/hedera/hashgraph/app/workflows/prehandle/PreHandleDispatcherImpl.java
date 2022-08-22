@@ -1,16 +1,16 @@
 package com.hedera.hashgraph.app.workflows.prehandle;
 
-import com.hedera.hashgraph.base.PreHandleDispatch;
+import com.hedera.hashgraph.base.PreHandleDispatcher;
 import com.hedera.hashgraph.app.ServicesAccessor;
 import com.hedera.hashgraph.hapi.OneOf;
 import com.hedera.hashgraph.hapi.model.TransactionBody;
 
 import java.util.Objects;
 
-public final class PreHandleDispatchImpl implements PreHandleDispatch {
+public final class PreHandleDispatcherImpl implements PreHandleDispatcher {
     private final ServicesAccessor services;
 
-    public PreHandleDispatchImpl(ServicesAccessor services) {
+    public PreHandleDispatcherImpl(ServicesAccessor services) {
         this.services = Objects.requireNonNull(services);
     }
 

@@ -1,6 +1,6 @@
 package com.hedera.hashgraph.app.workflows.prehandle;
 
-import com.hedera.hashgraph.base.PreHandleDispatch;
+import com.hedera.hashgraph.base.PreHandleDispatcher;
 import com.hedera.hashgraph.app.SessionContext;
 import com.hedera.hashgraph.app.workflows.ingest.IngestChecker;
 import com.hedera.hashgraph.app.workflows.ingest.PreCheckException;
@@ -29,13 +29,13 @@ public class PreHandleWorkflow {
     private final ExecutorService exe;
     private final AccountService accountService;
     private final IngestChecker checker;
-    private final PreHandleDispatch dispatcher;
+    private final PreHandleDispatcher dispatcher;
 
     public PreHandleWorkflow(
             ExecutorService exe,
             AccountService accountService,
             IngestChecker ingestChecker,
-            PreHandleDispatch dispatcher) {
+            PreHandleDispatcher dispatcher) {
         this.exe = Objects.requireNonNull(exe);
         this.accountService = Objects.requireNonNull(accountService);
         this.checker = Objects.requireNonNull(ingestChecker);
