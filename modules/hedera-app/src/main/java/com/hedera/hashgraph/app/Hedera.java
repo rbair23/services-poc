@@ -34,7 +34,6 @@ public class Hedera {
 
 		// Create various helper classes
 		final ThrottleAccumulator throttleAccumulator = new ThrottleAccumulatorImpl();
-		final FeeAccumulator feeAccumulator = new FeeAccumulatorImpl();
 
 		// Create the different workflows
 		final var ingestChecker = new IngestCheckerImpl(throttleAccumulator);
@@ -45,8 +44,8 @@ public class Hedera {
 		final var preHandleWorkflow = new PreHandleWorkflow(
 				preHandleExecutor, servicesAccessor.accountService(), ingestChecker, preHandleDispatcher);
 
-		final var handleTransactionDispatcher = new HandleTransactionDispatcherImpl(servicesAccessor);
-		final var handleTransactionWorkflow = new HandleTransactionWorkflow();
+		final var handleTransactionDispatcher = new HandleTransactionDispatcherImpl(servicesAccessor, throttleAccumulator, FeeAccumulatorImpl::new);
+		final var handleTransactionWorkflow = new HandleTransactionWorkflow(handleTransactionDispatcher);
 
 		platform.start(preHandleWorkflow, handleTransactionWorkflow);
 

@@ -1,6 +1,7 @@
 package com.hedera.hashgraph.file.impl;
 
 import com.hedera.hashgraph.base.ChangeManager;
+import com.hedera.hashgraph.base.HandleContext;
 import com.hedera.hashgraph.file.FileTransactionHandler;
 import com.hedera.hashgraph.file.impl.store.FileStore;
 import com.hedera.hashgraph.hapi.model.TransactionRecord;
@@ -14,11 +15,11 @@ public class FileTransactionHandlerImpl implements FileTransactionHandler {
 		this.store = store; // validate
 	}
 
-	public TransactionRecord handleFileCreate(ChangeManager cm, FileCreateTransactionBody tx) {
+	public TransactionRecord handleFileCreate(HandleContext ctx, FileCreateTransactionBody tx) {
 		// Actually create the file and return the record or something you bozo
 		// todo do other types of validation here that make sense
-		final var fileInfo = store.createFile(tx); // doesn't modify the merkel tree. Gotta save too.
-		cm.addChange(() -> store.saveFile(fileInfo));
+		final var fileInfo = store.createFile(tx); // doesn't modify the merkel tree. Have to save too.
+		ctx.changeManager().addChange(() -> store.saveFile(fileInfo));
 		// deal with problems. Create a record.
 
 		return null;

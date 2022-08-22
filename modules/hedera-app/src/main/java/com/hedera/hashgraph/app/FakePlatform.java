@@ -55,30 +55,34 @@ class FakePlatform implements Platform {
     }
 
     private void createEvent() {
-        try {
-            final var transactions = new LinkedList<Transaction>();
-            final var timeCreated = Instant.now();
-            ingestQueue.drainTo(transactions);
-            final var event = new FakeEvent(transactions, timeCreated);
-            eventQueue.put(event);
-            preHandleWorkflow.start(event);
-        } catch (InterruptedException ex) {
-            Thread.interrupted();
-            ex.printStackTrace();
+        while (true) {
+            try {
+                final var transactions = new LinkedList<Transaction>();
+                final var timeCreated = Instant.now();
+                ingestQueue.drainTo(transactions);
+                final var event = new FakeEvent(transactions, timeCreated);
+                eventQueue.put(event);
+                preHandleWorkflow.start(event);
+            } catch (InterruptedException ex) {
+                Thread.interrupted();
+                ex.printStackTrace();
+            }
         }
     }
 
     private void createRound() {
-        final var events = new LinkedList<Event>();
-        eventQueue.drainTo(events);
-        final var consensusOrder = new AtomicLong();
-        final List<ConsensusEvent> consensusEvents = events.stream()
-                .map(e -> (ConsensusEvent) new FakeConsensusEvent(e, consensusOrder.getAndIncrement()))
-                .toList();
+        while (true) {
+            final var events = new LinkedList<Event>();
+            eventQueue.drainTo(events);
+            final var consensusOrder = new AtomicLong();
+            final List<ConsensusEvent> consensusEvents = events.stream()
+                    .map(e -> (ConsensusEvent) new FakeConsensusEvent(e, consensusOrder.getAndIncrement()))
+                    .toList();
 
-        final var round = roundNumber.getAndIncrement();
-        final var r = new FakeRound(consensusEvents, round);
-        handleTransactionWorkflow.start(r);
+            final var round = roundNumber.getAndIncrement();
+            final var r = new FakeRound(consensusEvents, round);
+            handleTransactionWorkflow.start(r);
+        }
     }
 
     @Override
