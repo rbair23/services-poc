@@ -1,22 +1,20 @@
 package com.hedera.hashgraph.token.impl.store;
 
-import com.hedera.hashgraph.base.Store;
+import com.hedera.hashgraph.base.MerkleRegistry;
 import com.hedera.hashgraph.hapi.model.AccountID;
 import com.hedera.hashgraph.hapi.model.Key;
 import com.hedera.hashgraph.hapi.model.KeyList;
-import com.hedera.hashgraph.hapi.model.file.FileCreateTransactionBody;
-import com.hedera.hashgraph.hapi.model.file.FileInfo;
 import com.hedera.hashgraph.token.entity.Account;
 import com.swirlds.merkle.map.MerkleMap;
 
 import java.util.Collections;
 
 // NOTE: This is NOT exported from the module
-public class AccountStore implements Store {
+public class AccountStore {
 	private final MerkleMap<AccountID, AccountLeaf> mmap;
 
-	public AccountStore(MerkleMap<AccountID, AccountLeaf> mmap) {
-		this.mmap = mmap; // todo validate
+	public AccountStore(MerkleRegistry registry) {
+		this.mmap = null; // todo use registry
 	}
 
 	public Account loadAccount(AccountID id) {

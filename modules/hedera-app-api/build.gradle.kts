@@ -5,6 +5,7 @@ plugins {
 description = "Hedera Application API"
 
 dependencies {
-    implementation(libs.proto.parse)
     implementation(project(":modules:hedera-proto-api"))
+    implementation(libs.proto.parse)
+    implementation(libs.swirlds.common)
 }

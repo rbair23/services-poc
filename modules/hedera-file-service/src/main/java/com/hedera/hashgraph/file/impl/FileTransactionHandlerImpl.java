@@ -14,7 +14,7 @@ public class FileTransactionHandlerImpl implements FileTransactionHandler {
 		this.store = store; // validate
 	}
 
-	public TransactionRecord createFile(ChangeManager cm, FileCreateTransactionBody tx) {
+	public TransactionRecord handleFileCreate(ChangeManager cm, FileCreateTransactionBody tx) {
 		// Actually create the file and return the record or something you bozo
 		// todo do other types of validation here that make sense
 		final var fileInfo = store.createFile(tx); // doesn't modify the merkel tree. Gotta save too.
