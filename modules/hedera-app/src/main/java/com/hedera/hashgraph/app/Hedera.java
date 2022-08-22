@@ -4,24 +4,33 @@ import com.hedera.hashgraph.app.fee.FeeAccumulatorImpl;
 import com.hedera.hashgraph.app.grpc.GrpcHandler;
 import com.hedera.hashgraph.app.merkle.MerkleRegistryImpl;
 import com.hedera.hashgraph.app.throttle.ThrottleAccumulatorImpl;
+import com.hedera.hashgraph.app.workflows.handle.HandleTransactionDispatcherImpl;
+import com.hedera.hashgraph.app.workflows.handle.HandleTransactionWorkflow;
 import com.hedera.hashgraph.app.workflows.ingest.IngestCheckerImpl;
+import com.hedera.hashgraph.app.workflows.prehandle.PreHandleDispatchImpl;
+import com.hedera.hashgraph.app.workflows.prehandle.PreHandleWorkflow;
 import com.hedera.hashgraph.base.FeeAccumulator;
 import com.hedera.hashgraph.base.MerkleRegistry;
 import com.hedera.hashgraph.base.ThrottleAccumulator;
-import com.hedera.hashgraph.token.AccountService;
+import com.hedera.hashgraph.file.impl.FileServiceImpl;
 import com.hedera.hashgraph.token.impl.AccountServiceImpl;
-import com.swirlds.common.system.Platform;
+import com.hedera.hashgraph.token.impl.TokenServiceImpl;
 import io.helidon.grpc.server.GrpcRouting;
 import io.helidon.grpc.server.GrpcServer;
+
+import java.util.concurrent.Executors;
 
 public class Hedera {
 	public static void main(String[] args) {
 		// Create and initialize the platform
-		final Platform platform = new FakePlatform();
+		final FakePlatform platform = new FakePlatform();
 		final MerkleRegistry merkleRegistry = new MerkleRegistryImpl();
 
 		// Create all the services
-		final AccountService accountService = new AccountServiceImpl(merkleRegistry);
+		final var servicesAccessor = new ServicesAccessor(
+				new AccountServiceImpl(merkleRegistry),
+				new FileServiceImpl(merkleRegistry),
+				new TokenServiceImpl(merkleRegistry));
 
 		// Create various helper classes
 		final ThrottleAccumulator throttleAccumulator = new ThrottleAccumulatorImpl();
@@ -30,9 +39,20 @@ public class Hedera {
 		// Create the different workflows
 		final var ingestChecker = new IngestCheckerImpl(throttleAccumulator);
 
+		// Start up the platform
+		final var preHandleExecutor = Executors.newFixedThreadPool(5);
+		final var preHandleDispatcher = new PreHandleDispatchImpl(servicesAccessor);
+		final var preHandleWorkflow = new PreHandleWorkflow(
+				preHandleExecutor, servicesAccessor.accountService(), ingestChecker, preHandleDispatcher);
+
+		final var handleTransactionDispatcher = new HandleTransactionDispatcherImpl(servicesAccessor);
+		final var handleTransactionWorkflow = new HandleTransactionWorkflow();
+
+		platform.start(preHandleWorkflow, handleTransactionWorkflow);
+
 		// Now for each service, hook it up to the gRPC server! Yay.
 		// (We could do a similar block for support REST or gRPC Web)
-		final var handler = new GrpcHandler(platform, accountService, ingestChecker);
+		final var handler = new GrpcHandler(platform, servicesAccessor.accountService(), ingestChecker);
 		final var routing = GrpcRouting.builder()
 				.register(handler.service("proto.FileService")
 						.transaction("createFile")
