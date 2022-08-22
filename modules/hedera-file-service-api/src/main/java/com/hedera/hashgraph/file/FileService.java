@@ -6,9 +6,6 @@ import com.hedera.hashgraph.base.TransactionHandler;
 
 public interface FileService extends Service {
 	@Override
-	public FileEndpoint getEndpoint();
-
-	@Override
 	public TransactionHandler getTransactionHandler();
 
 	@Override

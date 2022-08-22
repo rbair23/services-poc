@@ -6,9 +6,6 @@ import com.hedera.hashgraph.base.TransactionHandler;
 
 public interface TokenService extends Service {
 	@Override
-	public TokenEndpoint getEndpoint();
-
-	@Override
 	public TokenTransactionHandler getTransactionHandler();
 
 	@Override

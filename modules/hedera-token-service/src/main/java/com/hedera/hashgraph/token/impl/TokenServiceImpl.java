@@ -2,7 +2,6 @@ package com.hedera.hashgraph.token.impl;
 
 import com.hedera.hashgraph.base.MerkleRegistry;
 import com.hedera.hashgraph.base.QueryHandler;
-import com.hedera.hashgraph.token.TokenEndpoint;
 import com.hedera.hashgraph.token.TokenService;
 import com.hedera.hashgraph.token.TokenTransactionHandler;
 import com.hedera.hashgraph.token.impl.store.AccountStore;
@@ -10,7 +9,6 @@ import com.hedera.hashgraph.token.impl.store.AccountStore;
 public class TokenServiceImpl implements TokenService {
 	private final AccountStore store;
 	private final TokenTransactionHandlerImpl txHandler;
-	private final TokenEndpointImpl endpoint;
 
 	public TokenServiceImpl(
 			/* I should get passed the merkel internal representing FileService, on which I attach my own merkle node with my own types*/
@@ -20,12 +18,6 @@ public class TokenServiceImpl implements TokenService {
 		//      create it, I can just pass it in. If it isn't there, I need to create it and add it.
 		store = new AccountStore(registry);
 		txHandler = new TokenTransactionHandlerImpl(store);
-		endpoint = new TokenEndpointImpl(txHandler);
-	}
-
-	@Override
-	public TokenEndpoint getEndpoint() {
-		return endpoint;
 	}
 
 	@Override

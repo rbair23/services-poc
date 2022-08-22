@@ -8,9 +8,6 @@ import com.hedera.hashgraph.token.entity.Account;
 
 public interface AccountService extends Service {
 	@Override
-	public AccountEndpoint getEndpoint();
-
-	@Override
 	public AccountTransactionHandler getTransactionHandler(); // TODO ALWAYS works on the current working state
 
 	@Override

@@ -3,7 +3,6 @@ package com.hedera.hashgraph.token.impl;
 import com.hedera.hashgraph.base.MerkleRegistry;
 import com.hedera.hashgraph.base.QueryHandler;
 import com.hedera.hashgraph.hapi.model.AccountID;
-import com.hedera.hashgraph.token.AccountEndpoint;
 import com.hedera.hashgraph.token.AccountService;
 import com.hedera.hashgraph.token.AccountTransactionHandler;
 import com.hedera.hashgraph.token.entity.Account;
@@ -16,11 +15,6 @@ public class AccountServiceImpl implements AccountService {
 			/* I should get passed the merkel internal representing FileService, on which I attach my own merkle node with my own types*/
 			MerkleRegistry registry) {
 		store = new AccountStore(registry);
-	}
-
-	@Override
-	public AccountEndpoint getEndpoint() {
-		return null;
 	}
 
 	@Override
