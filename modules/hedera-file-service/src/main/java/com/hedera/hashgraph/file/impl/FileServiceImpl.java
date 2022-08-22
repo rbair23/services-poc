@@ -1,8 +1,6 @@
 package com.hedera.hashgraph.file.impl;
 
 import com.hedera.hashgraph.base.MerkleRegistry;
-import com.hedera.hashgraph.base.QueryHandler;
-import com.hedera.hashgraph.base.TransactionHandler;
 import com.hedera.hashgraph.file.FileService;
 import com.hedera.hashgraph.file.impl.store.FileStore;
 
@@ -18,15 +16,5 @@ public class FileServiceImpl implements FileService {
 		//      create it, I can just pass it in. If it isn't there, I need to create it and add it.
 		store = new FileStore(registry);
 		txHandler = new FileTransactionHandlerImpl(store);
-	}
-
-	@Override
-	public TransactionHandler getTransactionHandler() {
-		return txHandler;
-	}
-
-	@Override
-	public QueryHandler getQueryHandler() {
-		return null;
 	}
 }

@@ -1,9 +1,7 @@
 package com.hedera.hashgraph.token.impl;
 
 import com.hedera.hashgraph.base.MerkleRegistry;
-import com.hedera.hashgraph.base.QueryHandler;
 import com.hedera.hashgraph.token.TokenService;
-import com.hedera.hashgraph.token.TokenTransactionHandler;
 import com.hedera.hashgraph.token.impl.store.AccountStore;
 
 public class TokenServiceImpl implements TokenService {
@@ -20,13 +18,4 @@ public class TokenServiceImpl implements TokenService {
 		txHandler = new TokenTransactionHandlerImpl(store);
 	}
 
-	@Override
-	public TokenTransactionHandler getTransactionHandler() {
-		return txHandler;
-	}
-
-	@Override
-	public QueryHandler getQueryHandler() {
-		return null;
-	}
 }
