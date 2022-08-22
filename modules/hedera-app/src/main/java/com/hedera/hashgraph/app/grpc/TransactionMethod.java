@@ -2,9 +2,9 @@ package com.hedera.hashgraph.app.grpc;
 
 import com.hedera.hashgraph.app.SessionContext;
 import com.hedera.hashgraph.app.workflows.ingest.IngestWorkflow;
-import com.hedera.hashgraph.hapi.parsers.proto.TransactionBodyProtoParser;
-import com.hedera.hashgraph.hapi.parsers.proto.base.SignedTransactionProtoParser;
-import com.hedera.hashgraph.hapi.parsers.proto.base.TransactionProtoParser;
+import com.hedera.hashgraph.hapi.parser.TransactionBodyProtoParser;
+import com.hedera.hashgraph.hapi.parser.base.SignedTransactionProtoParser;
+import com.hedera.hashgraph.hapi.parser.base.TransactionProtoParser;
 import io.grpc.stub.ServerCalls;
 import io.grpc.stub.StreamObserver;
 

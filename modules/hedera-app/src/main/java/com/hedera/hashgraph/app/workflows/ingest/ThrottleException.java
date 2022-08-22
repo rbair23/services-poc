@@ -9,6 +9,6 @@ import com.hedera.hashgraph.hapi.model.base.ResponseCodeEnum;
 public class ThrottleException extends PreCheckException {
     public ThrottleException(String message) {
         // TODO Not sure.
-        super(ResponseCodeEnum.Busy, message);
+        super(ResponseCodeEnum.BUSY, message);
     }
 }

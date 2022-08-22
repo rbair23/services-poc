@@ -97,8 +97,6 @@ public class Common {
 	 * @return output name in upper snake case
 	 */
 	public static String camelToUpperSnake(String name) {
-
-		System.out.println("camelToUpperSnake name = " + name+" already="+(name.chars().allMatch(c -> Character.isUpperCase(c) || Character.isDigit(c) || c == '_'))+" has_under="+(name.chars().anyMatch(c -> c == '_'))+" -- "+name.toUpperCase());
 		// check if already camel upper
 		if (name.chars().allMatch(c -> Character.isUpperCase(c) || Character.isDigit(c) || c == '_')) return name;
 		// check if already has underscores, then just capitalize
@@ -114,8 +112,9 @@ public class Common {
 				buf.append(Character.toUpperCase(c));
 			}
 		}
-		System.out.println("	camelToUpperSnake name = " + name+" > "+buf);
-		return buf.toString();
+		// fix special case for captial ID
+		final String converted = buf.toString().replaceAll("_I_D", "_ID");
+		return converted;
 	}
 
 	/**

@@ -8,6 +8,6 @@ import com.hedera.hashgraph.hapi.model.base.ResponseCodeEnum;
  */
 public class BackPressureException extends PreCheckException {
     public BackPressureException() {
-        super(ResponseCodeEnum.Busy, "Server busy. Backpressure is being applied. Try again later.");
+        super(ResponseCodeEnum.BUSY, "Server busy. Backpressure is being applied. Try again later.");
     }
 }

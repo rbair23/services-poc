@@ -1,8 +1,8 @@
 package com.hedera.hashgraph.app;
 
-import com.hedera.hashgraph.hapi.parsers.proto.TransactionBodyProtoParser;
-import com.hedera.hashgraph.hapi.parsers.proto.base.SignedTransactionProtoParser;
-import com.hedera.hashgraph.hapi.parsers.proto.base.TransactionProtoParser;
+import com.hedera.hashgraph.hapi.parser.TransactionBodyProtoParser;
+import com.hedera.hashgraph.hapi.parser.base.SignedTransactionProtoParser;
+import com.hedera.hashgraph.hapi.parser.base.TransactionProtoParser;
 
 // Put the per-thread stuff here like parsers
 public record SessionContext(

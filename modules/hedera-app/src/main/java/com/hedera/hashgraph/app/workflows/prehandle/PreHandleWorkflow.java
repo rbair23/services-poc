@@ -5,9 +5,9 @@ import com.hedera.hashgraph.app.SessionContext;
 import com.hedera.hashgraph.app.workflows.ingest.IngestChecker;
 import com.hedera.hashgraph.app.workflows.ingest.PreCheckException;
 import com.hedera.hashgraph.base.TransactionMetadata;
-import com.hedera.hashgraph.hapi.parsers.proto.TransactionBodyProtoParser;
-import com.hedera.hashgraph.hapi.parsers.proto.base.SignedTransactionProtoParser;
-import com.hedera.hashgraph.hapi.parsers.proto.base.TransactionProtoParser;
+import com.hedera.hashgraph.hapi.parser.TransactionBodyProtoParser;
+import com.hedera.hashgraph.hapi.parser.base.SignedTransactionProtoParser;
+import com.hedera.hashgraph.hapi.parser.base.TransactionProtoParser;
 import com.hedera.hashgraph.token.AccountService;
 import com.swirlds.common.system.events.Event;
 

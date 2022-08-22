@@ -121,11 +121,11 @@ public final class IngestWorkflow {
             // TODO We should *DEFINITELY* have metrics for how often every response code enum is used.
             // TODO Need to create a real protobuf message here
             // TODO We need to include fee calculations here, not sure what to return...?
-            final var response = new TransactionResponse(ResponseCodeEnum.Success, 100);
+            final var response = new TransactionResponse(ResponseCodeEnum.SUCCESS, 100);
             return new byte[0];
         } catch (MalformedProtobufException ex) {
             // TODO How to cost this?
-            final var response = new TransactionResponse(ResponseCodeEnum.BadEncoding, 100);
+            final var response = new TransactionResponse(ResponseCodeEnum.BAD_ENCODING, 100);
             return new byte[0];
         } catch (PreCheckException ex) {
             // TODO How to cost this?
@@ -134,7 +134,7 @@ public final class IngestWorkflow {
         } catch (Throwable th) {
             // We should NEVER hit this. If we do, log it vigorously. Something very wrong happened.
             // TODO How to cost this?
-            final var response = new TransactionResponse(ResponseCodeEnum.Unknown, 100);
+            final var response = new TransactionResponse(ResponseCodeEnum.UNKNOWN, 100);
             return new byte[0];
         }
     }

@@ -17,8 +17,8 @@ public final class PreHandleDispatchImpl implements PreHandleDispatch {
     public void dispatch(OneOf<TransactionBody.DataOneOfType, Object> transactionBodyData) {
         final var kind = transactionBodyData.kind();
         switch (kind) {
-            case FileCreate -> services.fileService().preHandler().preHandleFileCreate(transactionBodyData.as());
-            case CryptoCreateAccount -> services.accountService().preHandler().preHandleAccountCreate(transactionBodyData.as());
+            case FILE_CREATE -> services.fileService().preHandler().preHandleFileCreate(transactionBodyData.as());
+            case CRYPTO_CREATE_ACCOUNT -> services.accountService().preHandler().preHandleAccountCreate(transactionBodyData.as());
             default ->
                     throw new RuntimeException("Unexpected kind " + kind);
         }
