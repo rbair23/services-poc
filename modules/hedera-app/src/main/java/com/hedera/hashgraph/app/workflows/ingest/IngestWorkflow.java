@@ -1,6 +1,5 @@
 package com.hedera.hashgraph.app.workflows.ingest;
 
-import com.hedera.hashgraph.app.grpc.BackPressureException;
 import com.hedera.hashgraph.app.SessionContext;
 import com.hedera.hashgraph.hapi.model.TransactionBody;
 import com.hedera.hashgraph.hapi.model.TransactionID;

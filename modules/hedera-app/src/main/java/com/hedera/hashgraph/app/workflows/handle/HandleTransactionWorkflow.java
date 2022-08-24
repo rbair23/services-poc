@@ -1,17 +1,25 @@
 package com.hedera.hashgraph.app.workflows.handle;
 
-import com.hedera.hashgraph.base.HandleTransactionDispatcher;
-import com.hedera.hashgraph.base.TransactionMetadata;
+import com.hedera.hashgraph.base.*;
 import com.swirlds.common.system.Round;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 public class HandleTransactionWorkflow {
     private final HandleTransactionDispatcher dispatcher;
+    private final ThrottleAccumulator throttleAccumulator;
+    private final Supplier<FeeAccumulator> feeAccumulatorSupplier;
 
-    public HandleTransactionWorkflow(HandleTransactionDispatcher dispatcher) {
+    public HandleTransactionWorkflow(
+            HandleTransactionDispatcher dispatcher,
+            ThrottleAccumulator throttleAccumulator,
+            Supplier<FeeAccumulator> feeAccumulatorSupplier) {
         this.dispatcher = dispatcher;
+        this.throttleAccumulator = Objects.requireNonNull(throttleAccumulator);
+        this.feeAccumulatorSupplier = Objects.requireNonNull(feeAccumulatorSupplier);
     }
 
     public void start(Round r) {
@@ -27,8 +35,12 @@ public class HandleTransactionWorkflow {
                     if (md.failed()) {
                         // TODO The transaction failed during pre-check, so charge and such but don't dispatch.
                     } else {
+                        final var changeManager = new ChangeManager();
+                        final var feeAccumulator = feeAccumulatorSupplier.get();
+                        final var ctx = new HandleContext(changeManager, throttleAccumulator, feeAccumulator);
                         final var tx = md.transaction();
-                        dispatcher.dispatch(tx.body().data());
+                        dispatcher.dispatch(ctx, tx.body().data());
+                        // TODO Commit the change manager, and whatever else needs to be done...fees, whatever.
                     }
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);

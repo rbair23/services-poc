@@ -11,8 +11,10 @@ public class FileStore {
 	private final MerkleMap<FileID, FileLeaf> mmap;
 
 	public FileStore(MerkleRegistry registry) {
-//		this.mmap = registry.getOrRegister("FileServiceStore")
-		this.mmap = null;
+		this.mmap = registry.getOrRegister("FileServiceStore",
+				existingMap -> existingMap == null ?
+				new MerkleMap<>() :
+				existingMap);
 	}
 
 	public FileInfo loadFileInfo(FileID id) {

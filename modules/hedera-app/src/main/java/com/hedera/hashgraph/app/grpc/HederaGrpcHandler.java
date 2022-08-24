@@ -2,6 +2,7 @@ package com.hedera.hashgraph.app.grpc;
 
 import com.hedera.hashgraph.app.workflows.ingest.IngestChecker;
 import com.hedera.hashgraph.app.workflows.ingest.IngestWorkflow;
+import com.hedera.hashgraph.app.workflows.query.QueryWorkflow;
 import com.hedera.hashgraph.hapi.model.TransactionResponse;
 import com.hedera.hashgraph.hapi.model.base.Transaction;
 import com.hedera.hashgraph.token.AccountService;
@@ -18,11 +19,16 @@ import com.swirlds.common.system.Platform;
  * <p>A single GrpcHandler instance can be used to create service descriptions for all services and methods.
  * There is no reason to create more than one instance of this per node instance.
  */
-public final class GrpcHandler {
+public final class HederaGrpcHandler {
 	/**
 	 * A single implementation of UnaryMethod that handles all transaction ingest calls.
 	 */
 	private final TransactionMethod transactionMethod;
+
+	/**
+	 * A single implementation of UnaryMethod that handles all query calls.
+	 */
+	private final QueryMethod queryMethod;
 
 	/**
 	 * Create a new GrpcHandler.
@@ -32,18 +38,19 @@ public final class GrpcHandler {
 	 *                       Cannot be null.
 	 * @param ingestChecker Used to validate different aspects of the ingestion flow. Cannot be null.
 	 */
-	public GrpcHandler(Platform platform, AccountService accountService, IngestChecker ingestChecker) {
+	public HederaGrpcHandler(Platform platform, AccountService accountService, IngestChecker ingestChecker) {
 		this.transactionMethod = new TransactionMethod(
 				new IngestWorkflow(platform, accountService, ingestChecker));
+		this.queryMethod = new QueryMethod(new QueryWorkflow());
 	}
 
 	/**
-	 * Create and return a new {@link ServiceBuilder}, used for building a gRPC service definition.
+	 * Create and return a new {@link HederaGrpcServiceBuilder}, used for building a gRPC service definition.
 	 *
 	 * @param serviceName The name of the service. Cannot be null or empty or blank.
 	 * @return A service builder. Will never be null. Creates a new instance on each call.
 	 */
-	public ServiceBuilder service(String serviceName) {
-		return new ServiceBuilder(serviceName, transactionMethod);
+	public HederaGrpcServiceBuilder service(String serviceName) {
+		return new HederaGrpcServiceBuilder(serviceName, transactionMethod, queryMethod);
 	}
 }

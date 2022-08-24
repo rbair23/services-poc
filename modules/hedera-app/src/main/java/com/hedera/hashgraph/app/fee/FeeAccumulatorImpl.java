@@ -2,6 +2,9 @@ package com.hedera.hashgraph.app.fee;
 
 import com.hedera.hashgraph.base.FeeAccumulator;
 
+/**
+ * An implementation of {@link FeeAccumulator}.
+ */
 public class FeeAccumulatorImpl implements FeeAccumulator {
 	@Override
 	public void addBpt(final long amount) {

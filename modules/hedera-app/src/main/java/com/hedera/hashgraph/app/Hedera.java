@@ -1,7 +1,7 @@
 package com.hedera.hashgraph.app;
 
 import com.hedera.hashgraph.app.fee.FeeAccumulatorImpl;
-import com.hedera.hashgraph.app.grpc.GrpcHandler;
+import com.hedera.hashgraph.app.grpc.HederaGrpcHandler;
 import com.hedera.hashgraph.app.merkle.MerkleRegistryImpl;
 import com.hedera.hashgraph.app.throttle.ThrottleAccumulatorImpl;
 import com.hedera.hashgraph.app.workflows.handle.HandleTransactionDispatcherImpl;
@@ -50,7 +50,7 @@ public class Hedera {
 
 		// Now for each service, hook it up to the gRPC server! Yay.
 		// (We could do a similar block for support REST or gRPC Web)
-		final var handler = new GrpcHandler(platform, servicesAccessor.accountService(), ingestChecker);
+		final var handler = new HederaGrpcHandler(platform, servicesAccessor.accountService(), ingestChecker);
 		final var routing = GrpcRouting.builder()
 				.register(handler.service("proto.FileService")
 						.transaction("createFile")

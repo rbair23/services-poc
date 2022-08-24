@@ -1,4 +1,4 @@
-package com.hedera.hashgraph.app.grpc;
+package com.hedera.hashgraph.app.workflows.ingest;
 
 import com.hedera.hashgraph.app.workflows.ingest.PreCheckException;
 import com.hedera.hashgraph.hapi.model.base.ResponseCodeEnum;
