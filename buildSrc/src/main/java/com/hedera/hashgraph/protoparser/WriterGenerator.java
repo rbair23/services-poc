@@ -147,6 +147,7 @@ public class WriterGenerator {
 					/**
 					 * Writer for %s model object. Generate based on protobuf schema.
 					 */
+					@SuppressWarnings({"unchecked", "OptionalAssignedToNull"})
 					public final class %s {
 						// -- WRITE METHODS ---------------------------------------------
 						public static void write(%s data, OutputStream out) throws IOException {
@@ -180,28 +181,26 @@ public class WriterGenerator {
 		final String fieldName = field.nameCamelFirstLower();
 		final String fieldDef = schemaClassName+"."+camelToUpperSnake(field.name());
 		if (field instanceof OneOfField) {
-			OneOfField oneOfField = (OneOfField)field;
-
+			final OneOfField oneOfField = (OneOfField)field;
+			final String oneOfName = field.name()+"OneOf";
 			return """
-		{
-		    	    final var oneOf = data.%s(); 
-		    	    if(oneOf != null) {
-			    	    switch(oneOf.kind()) {
-		                %s
-			        	}
-			        }
-		        }
-					""".formatted(
-					fieldName,
+					final var %s = data.%s(); 
+					if(%s != null) {
+						switch(%s.kind()) {
+					%s
+						}
+					}""".formatted(
+					oneOfName,fieldName,oneOfName,oneOfName,
 					oneOfField.fields().stream().map(f ->
 							 			"""
- 							                case %s -> {
+ 							                    case %s -> {
  							                %s
  							            }"""
-									.formatted(camelToUpperSnake(f.name()), generateFieldWriteLines(f,schemaClassName,"((%s)oneOf.as())".formatted(f.javaFieldType()), imports))
-												.replaceAll("\n","\n                    "))
-							.collect(Collectors.joining("\n                "))
-			);
+									.formatted(camelToUpperSnake(f.name()), generateFieldWriteLines(f,schemaClassName,"((%s)%s.as())".formatted(f.javaFieldType(),oneOfName), imports))
+												.replaceAll("\n","\n        "))
+							.collect(Collectors.joining("\n"))
+
+			).replaceAll("\n","\n		");
 		} else {
 			final String writeMethodName = mapToWriteMethod(field);
 			if(field.optional()) {
