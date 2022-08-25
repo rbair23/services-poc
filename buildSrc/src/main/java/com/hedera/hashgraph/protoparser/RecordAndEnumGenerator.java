@@ -133,7 +133,7 @@ public class RecordAndEnumGenerator {
 			} else if (item.field() != null && item.field().fieldName() != null) {
 				final SingleField field = new SingleField(item.field(), lookupHelper);
 				fields.add(field);
-				field.addAllNeededImports(imports, true, false);
+				field.addAllNeededImports(imports, true, false, false);
 				// build java doc
 				if (field.comment() != null) {
 					final String fieldJavaDoc = item.field().docComment().getText();

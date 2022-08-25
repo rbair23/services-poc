@@ -17,8 +17,8 @@ import static com.hedera.hashgraph.protoparser.Common.snakeToCamel;
  * @param messageType
  */
 public record SingleField(boolean repeated, FieldType type, int fieldNumber, String name, String messageType,
-						  String messageTypeModelPackage, String messageTypeParserPackage, String comment,
-						  boolean depricated, OneOfField parent) implements Field {
+						  String messageTypeModelPackage, String messageTypeParserPackage, String messageTypeWriterPackage,
+						  String comment, boolean depricated, OneOfField parent) implements Field {
 	public SingleField(Protobuf3Parser.FieldContext fieldContext, final LookupHelper lookupHelper) {
 		this(fieldContext.REPEATED() != null,
 				FieldType.of(fieldContext.type_(), lookupHelper),
@@ -29,6 +29,8 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 						lookupHelper.getModelPackage(fieldContext.type_().messageType().messageName().getText()),
 				(fieldContext.type_().messageType() == null || fieldContext.type_().messageType().messageName().getText() == null) ? null :
 						lookupHelper.getParserPackage(fieldContext.type_().messageType().messageName().getText()),
+				(fieldContext.type_().messageType() == null || fieldContext.type_().messageType().messageName().getText() == null) ? null :
+						lookupHelper.getWriterPackage(fieldContext.type_().messageType().messageName().getText()),
 				fieldContext.docComment() == null ? null : fieldContext.docComment().getText(),
 				getDepricatedOption(fieldContext.fieldOptions()),
 				null
@@ -45,6 +47,8 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 						lookupHelper.getModelPackage(fieldContext.type_().messageType().messageName().getText()),
 				(fieldContext.type_().messageType() == null) ? null :
 						lookupHelper.getParserPackage(fieldContext.type_().messageType().messageName().getText()),
+				(fieldContext.type_().messageType() == null) ? null :
+						lookupHelper.getWriterPackage(fieldContext.type_().messageType().messageName().getText()),
 				fieldContext.docComment() == null ? null : fieldContext.docComment().getText(),
 				getDepricatedOption(fieldContext.fieldOptions()),
 				parent
@@ -75,8 +79,11 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 				messageType.equals("Int64Value") ||
 				messageType.equals("UInt64Value") ||
 				messageType.equals("SInt64Value") ||
+				messageType.equals("FloatValue") ||
+				messageType.equals("DoubleValue") ||
 				messageType.equals("BoolValue") ||
-				messageType.equals("BytesValue")
+				messageType.equals("BytesValue") ||
+				messageType.equals("enumValue")
 		);
 	}
 
@@ -96,8 +103,14 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 			case "Int32Value" -> "Optional<Integer>";
 			case "UInt32Value" -> "Optional<Integer>";
 			case "SInt32Value" -> "Optional<Integer>";
+			case "Int64Value" -> "Optional<Long>";
+			case "UInt64Value" -> "Optional<Long>";
+			case "SInt64Value" -> "Optional<Long>";
+			case "FloatValue" -> "Optional<Float>";
+			case "DoubleValue" -> "Optional<Double>";
 			case "BoolValue" -> "Optional<Boolean>";
 			case "BytesValue" -> "Optional<byte[]>";
+			case "EnumValue" -> "Optional<"+snakeToCamel(messageType, true)+">";
 			default -> fieldType;
 		};
 		if (repeated) {
@@ -113,10 +126,12 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 		return fieldType;
 	}
 
-	public void addAllNeededImports(Set<String> imports, boolean modelImports,boolean parserImports) {
+	public void addAllNeededImports(Set<String> imports, boolean modelImports,boolean parserImports,
+			final boolean writerImports) {
 		if (repeated || optional()) imports.add("java.util");
 		if (messageTypeModelPackage != null && modelImports) imports.add(messageTypeModelPackage);
 		if (messageTypeParserPackage != null && parserImports) imports.add(messageTypeParserPackage);
+		if (messageTypeWriterPackage != null && writerImports) imports.add(messageTypeWriterPackage);
 	}
 
 	public String parseCode() {
@@ -140,7 +155,7 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 	}
 
 	public String schemaFieldsDef() {
-		return "    private static final FieldDefinition %s = new FieldDefinition(\"%s\", FieldType.%s, %s, %d);"
+		return "    public static final FieldDefinition %s = new FieldDefinition(\"%s\", FieldType.%s, %s, %d);"
 				.formatted(camelToUpperSnake(name), name, type.fieldType(), repeated, fieldNumber);
 	}
 

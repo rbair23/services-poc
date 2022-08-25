@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -115,7 +114,7 @@ public class ParserGenerator {
 			} else if (item.oneof() != null) { // process one ofs
 				final var field = new OneOfField(item.oneof(), modelClassName, lookupHelper);
 				fields.add(field);
-				field.addAllNeededImports(imports, true, true);
+				field.addAllNeededImports(imports, true, true, false);
 			} else if (item.mapField() != null) { // process map fields
 				throw new IllegalStateException("Encountered a mapField that was not handled in "+ parserClassName);
 			} else if (item.reserved() != null) { // process reserved
@@ -123,7 +122,7 @@ public class ParserGenerator {
 			} else if (item.field() != null && item.field().fieldName() != null) {
 				final var field = new SingleField(item.field(), lookupHelper);
 				fields.add(field);
-				field.addAllNeededImports(imports, true, true);
+				field.addAllNeededImports(imports, true, true, false);
 			} else if (item.optionStatement() != null){
 				// no needed for now
 			} else {

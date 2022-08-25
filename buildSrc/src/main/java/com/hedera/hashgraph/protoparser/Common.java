@@ -18,6 +18,8 @@ public class Common {
 	public static final String SCHEMAS_DEST_PACKAGE = "com.hedera.hashgraph.hapi.schema";
 	/** The base package where all model java classes should be placed */
 	public static final String MODELS_DEST_PACKAGE = "com.hedera.hashgraph.hapi.model";
+	/** The base package where all writer java classes should be placed */
+	public static final String WRITERS_DEST_PACKAGE = "com.hedera.hashgraph.hapi.writer";
 
 	/**
 	 * Compute a destination Java package based on parent directory of the protobuf file

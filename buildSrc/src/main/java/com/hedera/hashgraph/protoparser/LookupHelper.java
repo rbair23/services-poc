@@ -16,6 +16,7 @@ import java.util.Set;
 import static com.hedera.hashgraph.protoparser.Common.MODELS_DEST_PACKAGE;
 import static com.hedera.hashgraph.protoparser.Common.PARSERS_DEST_PACKAGE;
 import static com.hedera.hashgraph.protoparser.Common.SCHEMAS_DEST_PACKAGE;
+import static com.hedera.hashgraph.protoparser.Common.WRITERS_DEST_PACKAGE;
 import static com.hedera.hashgraph.protoparser.Common.computeJavaPackageSuffix;
 
 /**
@@ -59,6 +60,18 @@ public class LookupHelper {
 		final String suffix = packageSuffixMap.get(messageName);
 		if (suffix == null) return null;
 		return PARSERS_DEST_PACKAGE + packageSuffixMap.get(messageName);
+	}
+	/**
+	 * Get the Java package a writer class should generated into for a given message. The directory structure for where
+	 * the message is relative to protobuf root is used as sub packages.
+	 *
+	 * @param messageName The name of the messgae
+	 * @return java package to put writer class in
+	 */
+	public String getWriterPackage(String messageName) {
+		final String suffix = packageSuffixMap.get(messageName);
+		if (suffix == null) return null;
+		return WRITERS_DEST_PACKAGE + packageSuffixMap.get(messageName);
 	}
 
 	/**

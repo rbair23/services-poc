@@ -2,11 +2,8 @@ package com.hedera.hashgraph.protoparser;
 
 import com.hedera.hashgraph.protoparser.grammar.Protobuf3Parser;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import static com.hedera.hashgraph.protoparser.Common.capitalizeFirstLetter;
 import static com.hedera.hashgraph.protoparser.Common.snakeToCamel;
 
 /**
@@ -74,7 +71,8 @@ public interface Field {
 	 */
 	public String javaFieldType();
 
-	public void addAllNeededImports(Set<String> imports, boolean modelImports,boolean parserImports);
+	public void addAllNeededImports(Set<String> imports, boolean modelImports,boolean parserImports,
+			final boolean writerImports);
 
 	public String parseCode();
 
@@ -90,6 +88,9 @@ public interface Field {
 	public boolean depricated();
 	public default boolean optional() {
 		return false;
+	}
+	public default OneOfField parent() {
+		return null;
 	}
 
 	public enum FieldType {

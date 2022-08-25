@@ -77,7 +77,7 @@ public class SchemaGenerator {
 				for (var topLevelDef : parsedDoc.topLevelDef()) {
 					final Protobuf3Parser.MessageDefContext msgDef = topLevelDef.messageDef();
 					if (msgDef != null) {
-						generateRecordFile(msgDef, dirName, javaPackage, packageDir, lookupHelper);
+						generateSchemaFile(msgDef, dirName, javaPackage, packageDir, lookupHelper);
 					}
 				}
 			}
@@ -85,16 +85,16 @@ public class SchemaGenerator {
 	}
 
 	/**
-	 * Generate a Java record from protobuf message type
+	 * Generate a Java schema class from protobuf message type
 	 *
 	 * @param msgDef the parsed message
 	 * @param dirName the directory name of the dir containing the protobuf file
-	 * @param javaPackage the java package the record file should be generated in
+	 * @param javaPackage the java package the schema file should be generated in
 	 * @param packageDir the output package directory
 	 * @param lookupHelper helper for global context
-	 * @throws IOException If there was a problem writing record file
+	 * @throws IOException If there was a problem writing schema file
 	 */
-	private static void generateRecordFile(Protobuf3Parser.MessageDefContext msgDef, String dirName, String javaPackage,
+	private static void generateSchemaFile(Protobuf3Parser.MessageDefContext msgDef, String dirName, String javaPackage,
 			Path packageDir, final LookupHelper lookupHelper) throws IOException {
 		final var modelClassName = msgDef.messageName().getText();
 		final var parserClassName = modelClassName+ SCHEMA_JAVA_FILE_SUFFIX;
@@ -105,14 +105,14 @@ public class SchemaGenerator {
 		String deprectaed = "";
 		final List<Field> fields = new ArrayList<>();
 		final Set<String> imports = new TreeSet<>();
-		final String moidelJavaPackage = computeJavaPackage(MODELS_DEST_PACKAGE, dirName);
+		final String modelJavaPackage = computeJavaPackage(MODELS_DEST_PACKAGE, dirName);
 		for(var item: msgDef.messageBody().messageElement()) {
 			if (item.messageDef() != null) { // process sub messages
-				generateRecordFile(item.messageDef(), dirName, javaPackage,packageDir,lookupHelper);
+				generateSchemaFile(item.messageDef(), dirName, javaPackage,packageDir,lookupHelper);
 			} else if (item.oneof() != null) { // process one ofs
 				final var field = new OneOfField(item.oneof(), modelClassName, lookupHelper);
 				fields.add(field);
-				field.addAllNeededImports(imports, true, false);
+				field.addAllNeededImports(imports, true, false, false);
 			} else if (item.mapField() != null) { // process map fields
 				throw new IllegalStateException("Encountered a mapField that was not handled in "+ parserClassName);
 			} else if (item.reserved() != null) { // process reserved
@@ -144,7 +144,7 @@ public class SchemaGenerator {
 					/**
 					 * Schema for %s model object. Generate based on protobuf schema.
 					 */
-					public class %s implements Schema {
+					public final class %s implements Schema {
 						// -- FIELD DEFINITIONS ---------------------------------------------
 						
 					%s
@@ -158,7 +158,7 @@ public class SchemaGenerator {
 						 * @return true if it belongs to this schema
 						 */
 						public static boolean valid(FieldDefinition f) {
-							return f != null && getField(f.number()) != null;
+							return f != null && getField(f.number()) == f;
 						}
 						
 					%s

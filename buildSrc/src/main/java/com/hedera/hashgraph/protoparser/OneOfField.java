@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.hedera.hashgraph.protoparser.Common.capitalizeFirstLetter;
-import static com.hedera.hashgraph.protoparser.Common.snakeToCamel;
-
 /**
  * A implementation of Field for OneOf fields 
  */
@@ -81,10 +78,11 @@ public record OneOfField(
 	}
 
 	@Override
-	public void addAllNeededImports(final Set<String> imports, boolean modelImports,boolean parserImports) {
+	public void addAllNeededImports(final Set<String> imports, boolean modelImports,boolean parserImports,
+			final boolean writerImports) {
 		imports.add("com.hedera.hashgraph.hapi");
 		for(var field:fields) {
-			field.addAllNeededImports(imports, modelImports, parserImports);
+			field.addAllNeededImports(imports, modelImports, parserImports, writerImports);
 		}
 	}
 
@@ -115,5 +113,17 @@ public record OneOfField(
 
 	public boolean depricated() {
 		return false; // TODO is there a better answer here
+	}
+
+	@Override
+	public String toString() {
+		return "OneOfField{" +
+				"parentMessageName='" + parentMessageName + '\'' +
+				", name='" + name + '\'' +
+				", comment='" + comment + '\'' +
+				", fields.size=" + fields.size() +
+				", repeated=" + repeated +
+				", depricated=" + depricated +
+				'}';
 	}
 }

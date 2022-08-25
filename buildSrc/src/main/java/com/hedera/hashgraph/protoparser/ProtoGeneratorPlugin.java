@@ -19,11 +19,17 @@ public abstract class ProtoGeneratorPlugin extends DefaultTask {
 
 		@TaskAction
 		public void perform() throws IOException {
-			final File protoDir = getProtoSrcDir().getAsFile().get();
-			final File generatedDir = getGeneratedFileDir().getAsFile().get();
-			final LookupHelper lookupHelper = new LookupHelper(protoDir);
-			RecordAndEnumGenerator.generateRecordsAndEnums(protoDir, generatedDir, lookupHelper);
-			SchemaGenerator.generateSchemas(protoDir, generatedDir, lookupHelper);
-			ParserGenerator.generateParsers(protoDir, generatedDir, lookupHelper);
+			try {
+				final File protoDir = getProtoSrcDir().getAsFile().get();
+				final File generatedDir = getGeneratedFileDir().getAsFile().get();
+				final LookupHelper lookupHelper = new LookupHelper(protoDir);
+				RecordAndEnumGenerator.generateRecordsAndEnums(protoDir, generatedDir, lookupHelper);
+				SchemaGenerator.generateSchemas(protoDir, generatedDir, lookupHelper);
+				ParserGenerator.generateParsers(protoDir, generatedDir, lookupHelper);
+				WriterGenerator.generateWriters(protoDir, generatedDir, lookupHelper);
+			} catch (Throwable e) {
+				e.printStackTrace();
+				throw e;
+			}
 		}
 	}
