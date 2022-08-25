@@ -5,6 +5,7 @@ import com.hedera.hashgraph.app.SessionContext;
 import com.hedera.hashgraph.app.workflows.ingest.IngestChecker;
 import com.hedera.hashgraph.app.workflows.ingest.PreCheckException;
 import com.hedera.hashgraph.base.TransactionMetadata;
+import com.hedera.hashgraph.hapi.parser.QueryProtoParser;
 import com.hedera.hashgraph.hapi.parser.TransactionBodyProtoParser;
 import com.hedera.hashgraph.hapi.parser.base.SignedTransactionProtoParser;
 import com.hedera.hashgraph.hapi.parser.base.TransactionProtoParser;
@@ -22,6 +23,7 @@ public class PreHandleWorkflow {
      */
     private static final ThreadLocal<SessionContext> SESSION_CONTEXT_THREAD_LOCAL =
             ThreadLocal.withInitial(() -> new SessionContext(
+                    new QueryProtoParser(),
                     new TransactionProtoParser(),
                     new SignedTransactionProtoParser(),
                     new TransactionBodyProtoParser()));

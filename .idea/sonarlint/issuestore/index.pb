@@ -11,8 +11,6 @@ W
 \modules/hedera-file-service/src/main/java/com/hedera/hashgraph/file/impl/store/FileLeaf.java,1/9/19fdb435fb91f9b8a6e67e3af64b4d7db783b076
 e
 5modules/hedera-app-api/src/main/java/module-info.java,4/5/45a808b461b25f1b5fbbc235a1b38ad40ce9afc5
-C
-settings.gradle.kts,7/4/749edfcc96398253e5b3416184e95c46621da850
 ë
 amodules/hedera-token-service/src/main/java/com/hedera/hashgraph/token/impl/store/AccountImpl.java,c/0/c0476be5943863f2e93a7e6700cf223dc29aa890
 ë
@@ -21,8 +19,6 @@ amodules/hedera-token-service/src/main/java/com/hedera/hashgraph/token/impl/stor
 -modules/hedera-token-service/build.gradle.kts,6/9/69793b769f7ebfffcf438b60d065b35268504e26
 a
 1modules/hedera-token-service-api/build.gradle.kts,a/3/a3e2d6336980f770963dd21cd2a17d0698bb5a8e
-a
-1modules/hedera-app/src/main/java/module-info.java,9/4/94f204b5b7da616fe438af2836eaf3561a4f4cd9
 k
 ;modules/hedera-token-service/src/main/java/module-info.java,0/f/0feaeeb4b2723925c5b0beec7e57bb15d9d894a5
 õ
@@ -102,11 +98,7 @@ Omodules/hedera-app/src/main/java/com/hedera/hashgraph/app/ServicesAccessor.java
 amodules/hedera-app/src/main/java/com/hedera/hashgraph/app/workflows/ingest/ThrottleException.java,b/e/bec5d8fd3c756ce49464ce312e2cf0bfffd2353e
 ç
 ]modules/hedera-app/src/main/java/com/hedera/hashgraph/app/workflows/ingest/IngestChecker.java,9/b/9bd7b5adc7e9f5d0be2e0f70a37f6d0110600528
-î
-dmodules/hedera-app/src/main/java/com/hedera/hashgraph/app/workflows/prehandle/PreHandleWorkflow.java,f/c/fc390d30a8eccd5ea20450318ab6c49560ebf666
 q
 Amodules/hedera-proto-api/src/main/proto/services/get_by_key.proto,8/c/8c631a3d0b3f03f4833cc5b0b32c687bc830dd5a
 l
 <modules/hedera-proto-api/src/main/proto/services/query.proto,3/7/371c643168613f1ee71a3b9d53db133a3c8c21b3
-è
-_modules/hedera-app/src/main/java/com/hedera/hashgraph/app/throttle/ThrottleAccumulatorImpl.java,5/7/57663225e65586644a3644983f107d12b88107f8

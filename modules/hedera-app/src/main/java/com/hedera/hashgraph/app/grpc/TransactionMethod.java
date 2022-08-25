@@ -9,8 +9,15 @@ import com.hedera.hashgraph.hapi.parser.base.TransactionProtoParser;
 import io.grpc.stub.ServerCalls;
 import io.grpc.stub.StreamObserver;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.Objects;
 
+/**
+ * Handles gRPC duties for processing {@link com.hedera.hashgraph.hapi.model.base.Transaction} gRPC calls. A single
+ * instance of this class is used by all transaction ingest threads in the node.
+ */
+@ThreadSafe
 final class TransactionMethod implements ServerCalls.UnaryMethod<byte[], byte[]> {
     /**
      * Per-thread shared resources are shared in a {@link SessionContext}. We store these
@@ -30,7 +37,7 @@ final class TransactionMethod implements ServerCalls.UnaryMethod<byte[], byte[]>
      */
     private final IngestWorkflow workflow;
 
-    TransactionMethod(IngestWorkflow workflow) {
+    TransactionMethod(@Nonnull IngestWorkflow workflow) {
         this.workflow = Objects.requireNonNull(workflow);
     }
 

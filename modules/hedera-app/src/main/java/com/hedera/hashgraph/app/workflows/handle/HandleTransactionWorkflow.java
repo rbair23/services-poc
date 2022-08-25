@@ -3,6 +3,7 @@ package com.hedera.hashgraph.app.workflows.handle;
 import com.hedera.hashgraph.base.*;
 import com.swirlds.common.system.Round;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -14,15 +15,15 @@ public class HandleTransactionWorkflow {
     private final Supplier<FeeAccumulator> feeAccumulatorSupplier;
 
     public HandleTransactionWorkflow(
-            HandleTransactionDispatcher dispatcher,
-            ThrottleAccumulator throttleAccumulator,
-            Supplier<FeeAccumulator> feeAccumulatorSupplier) {
+            @Nonnull HandleTransactionDispatcher dispatcher,
+            @Nonnull ThrottleAccumulator throttleAccumulator,
+            @Nonnull Supplier<FeeAccumulator> feeAccumulatorSupplier) {
         this.dispatcher = dispatcher;
         this.throttleAccumulator = Objects.requireNonNull(throttleAccumulator);
         this.feeAccumulatorSupplier = Objects.requireNonNull(feeAccumulatorSupplier);
     }
 
-    public void start(Round r) {
+    public void start(@Nonnull Round r) {
         final var itr = r.eventIterator();
         while (itr.hasNext()) {
             final var event = itr.next();

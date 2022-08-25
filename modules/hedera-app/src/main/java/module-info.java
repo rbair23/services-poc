@@ -9,6 +9,8 @@ module com.hedera.hashgraph.app {
 	requires io.helidon.grpc.core;
 	requires com.swirlds.common;
 	requires com.swirlds.merkle;
+	requires jsr305;
+
 	requires java.desktop; // Shouldn't need this, but Platform requires it for now...
 	requires com.hedera.hashgraph.protoparse;
 

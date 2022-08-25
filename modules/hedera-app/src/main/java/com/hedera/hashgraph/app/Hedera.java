@@ -43,8 +43,8 @@ public class Hedera {
 		final var preHandleWorkflow = new PreHandleWorkflow(
 				preHandleExecutor, servicesAccessor.accountService(), ingestChecker, preHandleDispatcher);
 
-		final var handleTransactionDispatcher = new HandleTransactionDispatcherImpl(servicesAccessor, throttleAccumulator, FeeAccumulatorImpl::new);
-		final var handleTransactionWorkflow = new HandleTransactionWorkflow(handleTransactionDispatcher);
+		final var handleTransactionDispatcher = new HandleTransactionDispatcherImpl(servicesAccessor);
+		final var handleTransactionWorkflow = new HandleTransactionWorkflow(handleTransactionDispatcher, throttleAccumulator, FeeAccumulatorImpl::new);
 
 		platform.start(preHandleWorkflow, handleTransactionWorkflow);
 

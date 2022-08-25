@@ -8,6 +8,9 @@ import com.hedera.hashgraph.hapi.model.base.Transaction;
 import com.hedera.hashgraph.token.AccountService;
 import com.swirlds.common.system.Platform;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
+
 /**
  * Common handler for <b>ALL</b> gRPC requests.
  *
@@ -19,6 +22,7 @@ import com.swirlds.common.system.Platform;
  * <p>A single GrpcHandler instance can be used to create service descriptions for all services and methods.
  * There is no reason to create more than one instance of this per node instance.
  */
+@ThreadSafe
 public final class HederaGrpcHandler {
 	/**
 	 * A single implementation of UnaryMethod that handles all transaction ingest calls.
@@ -38,7 +42,10 @@ public final class HederaGrpcHandler {
 	 *                       Cannot be null.
 	 * @param ingestChecker Used to validate different aspects of the ingestion flow. Cannot be null.
 	 */
-	public HederaGrpcHandler(Platform platform, AccountService accountService, IngestChecker ingestChecker) {
+	public HederaGrpcHandler(
+			@Nonnull Platform platform,
+			@Nonnull AccountService accountService,
+			@Nonnull IngestChecker ingestChecker) {
 		this.transactionMethod = new TransactionMethod(
 				new IngestWorkflow(platform, accountService, ingestChecker));
 		this.queryMethod = new QueryMethod(new QueryWorkflow());
@@ -50,7 +57,7 @@ public final class HederaGrpcHandler {
 	 * @param serviceName The name of the service. Cannot be null or empty or blank.
 	 * @return A service builder. Will never be null. Creates a new instance on each call.
 	 */
-	public HederaGrpcServiceBuilder service(String serviceName) {
+	public HederaGrpcServiceBuilder service(@Nonnull String serviceName) {
 		return new HederaGrpcServiceBuilder(serviceName, transactionMethod, queryMethod);
 	}
 }

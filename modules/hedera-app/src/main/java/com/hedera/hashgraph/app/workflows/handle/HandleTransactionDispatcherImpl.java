@@ -6,17 +6,20 @@ import com.hedera.hashgraph.base.HandleTransactionDispatcher;
 import com.hedera.hashgraph.hapi.OneOf;
 import com.hedera.hashgraph.hapi.model.TransactionBody;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public class HandleTransactionDispatcherImpl implements HandleTransactionDispatcher {
     private final ServicesAccessor services;
 
-    public HandleTransactionDispatcherImpl(ServicesAccessor services) {
+    public HandleTransactionDispatcherImpl(@Nonnull ServicesAccessor services) {
         this.services = Objects.requireNonNull(services);
     }
 
     @Override
-    public void dispatch(HandleContext ctx, OneOf<TransactionBody.DataOneOfType, Object> transactionBodyData) {
+    public void dispatch(
+            @Nonnull HandleContext ctx,
+            @Nonnull OneOf<TransactionBody.DataOneOfType, Object> transactionBodyData) {
         final var kind = transactionBodyData.kind();
         switch (kind) {
             case FILE_CREATE -> services.fileService().transactionHandler()

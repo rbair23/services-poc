@@ -2,6 +2,7 @@ package com.hedera.hashgraph.app.throttle;
 
 import com.hedera.hashgraph.base.ThrottleAccumulator;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -10,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 // throttle engine and would check for overflow when applying incremental amount and would check for
 // missing throttles and so forth. This is just a quick and very dirty and very wrong implementation for
 // POC purposes.
+@ThreadSafe
 public class ThrottleAccumulatorImpl implements ThrottleAccumulator {
 	private final Map<String, AtomicLong> throttles = new HashMap<>();
 

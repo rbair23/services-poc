@@ -10,12 +10,15 @@ import com.hedera.hashgraph.hapi.parser.base.TransactionProtoParser;
 import io.grpc.stub.ServerCalls;
 import io.grpc.stub.StreamObserver;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.Objects;
 
 /**
  * Handles gRPC duties for processing {@link com.hedera.hashgraph.hapi.model.Query} gRPC calls. A single
  * instance of this class is used by all query threads in the node.
  */
+@ThreadSafe
 final class QueryMethod implements ServerCalls.UnaryMethod<byte[], byte[]> {
     /**
      * Per-thread shared resources are shared in a {@link SessionContext}. We store these
@@ -39,7 +42,7 @@ final class QueryMethod implements ServerCalls.UnaryMethod<byte[], byte[]> {
      * Create a new QueryMethod. This is only called by the {@link HederaGrpcServiceBuilder}.
      * @param workflow a non-null {@link QueryWorkflow}
      */
-    QueryMethod(QueryWorkflow workflow) {
+    QueryMethod(@Nonnull QueryWorkflow workflow) {
         this.workflow = Objects.requireNonNull(workflow);
     }
 

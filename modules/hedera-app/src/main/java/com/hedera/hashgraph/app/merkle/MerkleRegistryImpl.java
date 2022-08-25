@@ -3,6 +3,7 @@ package com.hedera.hashgraph.app.merkle;
 import com.hedera.hashgraph.base.MerkleRegistry;
 import com.swirlds.common.merkle.MerkleNode;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.function.UnaryOperator;
 
 /**
@@ -14,6 +15,7 @@ import java.util.function.UnaryOperator;
  *
  * @see MerkleRegistry
  */
+@NotThreadSafe
 public class MerkleRegistryImpl implements MerkleRegistry {
 	// TODO Create a constructor that takes a ServicesState and implement the getOrRegister method.
 

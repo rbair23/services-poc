@@ -4,6 +4,9 @@ import io.grpc.MethodDescriptor;
 import io.helidon.grpc.core.MarshallerSupplier;
 import io.helidon.grpc.server.ServiceDescriptor;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +30,7 @@ import java.util.Set;
  *
  * <p>Instances of the builder are created by the {@link HederaGrpcHandler} for each unique Service definition.
  */
+@NotThreadSafe
 public final class HederaGrpcServiceBuilder {
     /**
      * Create a single JVM-wide Marshaller instance that simply reads/writes byte arrays to/from
@@ -86,7 +90,10 @@ public final class HederaGrpcServiceBuilder {
      *                          This cannot be null.
      * @param queryMethod The {@link QueryMethod} to delegate to for handling query calls. Cannot be null.
      */
-    HederaGrpcServiceBuilder(String serviceName, TransactionMethod transactionMethod, QueryMethod queryMethod) {
+    HederaGrpcServiceBuilder(
+            @Nonnull String serviceName,
+            @Nonnull TransactionMethod transactionMethod,
+            @Nonnull QueryMethod queryMethod) {
         this.transactionMethod = Objects.requireNonNull(transactionMethod);
         this.queryMethod = Objects.requireNonNull(queryMethod);
         this.serviceName = Objects.requireNonNull(serviceName);
@@ -102,7 +109,7 @@ public final class HederaGrpcServiceBuilder {
      * @param methodName The name of the transaction method. Cannot be null or blank.
      * @return A reference to the builder.
      */
-    public HederaGrpcServiceBuilder transaction(String methodName) {
+    public HederaGrpcServiceBuilder transaction(@Nonnull String methodName) {
         if (Objects.requireNonNull(methodName).isBlank()) {
             throw new IllegalArgumentException("The gRPC method name cannot be blank");
         }
@@ -118,7 +125,7 @@ public final class HederaGrpcServiceBuilder {
      * @param methodName The name of the query method. Cannot be null or blank.
      * @return A reference to the builder.
      */
-    public HederaGrpcServiceBuilder query(String methodName) {
+    public HederaGrpcServiceBuilder query(@Nonnull String methodName) {
         if (Objects.requireNonNull(methodName).isBlank()) {
             throw new IllegalArgumentException("The gRPC method name cannot be blank");
         }
@@ -150,6 +157,7 @@ public final class HederaGrpcServiceBuilder {
      * A single implementation of this class is designed to be used by multiple threads, including
      * by multiple app instances within a single JVM!
      */
+    @ThreadSafe
     private static final class NoopMarshaller implements MethodDescriptor.Marshaller<byte[]> {
         // TODO This value should be retrieved from config. We need the new config API from platform base.
         //      Oh. When we do have that config, then maybe the NoopMarshaller will have to change to being

@@ -40,6 +40,7 @@ dependencyResolutionManagement {
             version("protobuf-java-version", "3.19.4")
             version("swirlds-version", "0.28.0-alpha.3")
             version("tuweni-version", "2.2.0")
+            version("jsr305-version", "3.0.2")
 
             // List of bundles provided for us. When applicable, favor using these over individual libraries.
             // Use when you need to use Besu
@@ -79,6 +80,7 @@ dependencyResolutionManagement {
             library("javax-annotation", "javax.annotation", "javax.annotation-api").versionRef("javax-annotation-version")
             library("javax-inject", "javax.inject", "javax.inject").versionRef("javax-inject-version")
             library("jetbrains-annotation", "org.jetbrains", "annotations").versionRef("jetbrains-annotation-version")
+            library("jsr305-annotation", "com.google.code.findbugs", "jsr305").versionRef("jsr305-version")
             library("log4j-api", "org.apache.logging.log4j", "log4j-api").versionRef("log4j-version")
             library("log4j-core", "org.apache.logging.log4j", "log4j-core").versionRef("log4j-version")
             library("proto-parse", "com.hedera.hashgraph.protoparse", "proto-parse").versionRef("proto-parse-version")
