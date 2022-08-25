@@ -71,7 +71,7 @@ public class EnumGenerator {
 		try (FileWriter javaWriter = new FileWriter(javaFile)) {
 			javaWriter.write(
 					"package "+javaPackage+";\n"+
-							createEnum("", javaDocComment, deprectaed, enumName, maxIndex, enumValues)
+							createEnum("", javaDocComment, deprectaed, enumName, maxIndex, enumValues, false)
 			);
 		}
 	}
@@ -85,11 +85,20 @@ public class EnumGenerator {
 	 * @param enumName the name for enum
 	 * @param maxIndex the max ordinal for enum
 	 * @param enumValues map of ordinal to enum value
+	 * @param addUnknown when true we add a enum value for one of
 	 * @return string code for enum
 	 */
 	static String createEnum(String indent, String javaDocComment, String deprectaed, String enumName,
-			int maxIndex, Map<Integer, EnumValue> enumValues) {
+			int maxIndex, Map<Integer, EnumValue> enumValues, boolean addUnknown) {
 		final List<String> enumValuesCode = new ArrayList<>(maxIndex);
+		if (addUnknown) {
+			enumValuesCode.add(FIELD_INDENT+"""
+     				 /**
+     				  * Enum value for a unset OneOf, to avoid null OneOfs
+     				  */
+     				 UNSET(-1)"""
+					.replaceAll("\n","\n"+FIELD_INDENT));
+		}
 		for (int i = 0; i <= maxIndex; i++) {
 			final EnumValue enumValue = enumValues.get(i);
 			if (enumValue != null) {

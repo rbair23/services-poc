@@ -22,11 +22,15 @@ public abstract class ProtoGeneratorPlugin extends DefaultTask {
 			try {
 				final File protoDir = getProtoSrcDir().getAsFile().get();
 				final File generatedDir = getGeneratedFileDir().getAsFile().get();
+				final File generatedJavaMainDir = new File(getGeneratedFileDir().getAsFile().get(),"main/java");
+				generatedJavaMainDir.mkdirs();
+				final File generatedJavaTestDir = new File(getGeneratedFileDir().getAsFile().get(),"test/java");
+				generatedJavaTestDir.mkdirs();
 				final LookupHelper lookupHelper = new LookupHelper(protoDir);
-				RecordAndEnumGenerator.generateRecordsAndEnums(protoDir, generatedDir, lookupHelper);
-				SchemaGenerator.generateSchemas(protoDir, generatedDir, lookupHelper);
-				ParserGenerator.generateParsers(protoDir, generatedDir, lookupHelper);
-				WriterGenerator.generateWriters(protoDir, generatedDir, lookupHelper);
+				ModelGenerator.generateModel(protoDir, generatedJavaMainDir, lookupHelper);
+				SchemaGenerator.generateSchemas(protoDir, generatedJavaMainDir, lookupHelper);
+				ParserGenerator.generateParsers(protoDir, generatedJavaMainDir, lookupHelper);
+				WriterGenerator.generateWriters(protoDir, generatedJavaMainDir, lookupHelper);
 			} catch (Throwable e) {
 				e.printStackTrace();
 				throw e;

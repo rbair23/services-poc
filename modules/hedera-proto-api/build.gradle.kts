@@ -11,10 +11,10 @@ dependencies {
 
 // ===== PROTOBUF GENERATION ===========================================================================================
 
-var generatedSrcDir = buildDir.resolve("generated/sources/proto-java")
-java.sourceSets["main"].java {
-    srcDir(generatedSrcDir)
-}
+var generatedSrcDir = buildDir.resolve("generated/sources/proto")
+java.sourceSets["main"].java {srcDir(generatedSrcDir.resolve("main/java"))}
+java.sourceSets["test"].java {srcDir(generatedSrcDir.resolve("test/java"))}
+
 tasks.register<com.hedera.hashgraph.protoparser.ProtoGeneratorPlugin>("protoGenerator") {
     protoSrcDir.set(projectDir.resolve("src/main/proto"))
     generatedFileDir.set(generatedSrcDir)

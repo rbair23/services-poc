@@ -19,7 +19,7 @@ public class HandleTransactionDispatcherImpl implements HandleTransactionDispatc
     @Override
     public void dispatch(
             @Nonnull HandleContext ctx,
-            @Nonnull OneOf<TransactionBody.DataOneOfType, Object> transactionBodyData) {
+            @Nonnull OneOf<TransactionBody.DataOneOfType> transactionBodyData) {
         final var kind = transactionBodyData.kind();
         switch (kind) {
             case FILE_CREATE -> services.fileService().transactionHandler()

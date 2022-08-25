@@ -14,7 +14,7 @@ public final class PreHandleDispatcherImpl implements PreHandleDispatcher {
         this.services = Objects.requireNonNull(services);
     }
 
-    public void dispatch(OneOf<TransactionBody.DataOneOfType, Object> transactionBodyData) {
+    public void dispatch(OneOf<TransactionBody.DataOneOfType> transactionBodyData) {
         final var kind = transactionBodyData.kind();
         switch (kind) {
             case FILE_CREATE -> services.fileService().preHandler().preHandleFileCreate(transactionBodyData.as());

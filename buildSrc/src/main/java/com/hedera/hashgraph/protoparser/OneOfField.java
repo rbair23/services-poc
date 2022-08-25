@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.hedera.hashgraph.protoparser.Common.camelToUpperSnake;
+
 /**
  * A implementation of Field for OneOf fields 
  */
@@ -69,18 +71,7 @@ public record OneOfField(
 	 */
 	@Override
 	public String javaFieldType() {
-		String commonType = null;
-		boolean allSame = true;
-		for(var field: fields) {
-			if (commonType == null) {
-				commonType =  field.javaFieldType();
-			} else if (commonType != field.javaFieldType()) {
-				allSame = false;
-				break;
-			}
-		}
-		commonType = allSame ? commonType : "Object";
-		return "OneOf<"+parentMessageName+"."+ nameCamelFirstUpper()+"OneOfType, "+commonType+">";
+		return "OneOf<"+getEnumClassRef()+">";
 	}
 
 	/**
@@ -108,7 +99,7 @@ public record OneOfField(
 	 */
 	@Override
 	public String javaDefault() {
-		return "null";
+		return camelToUpperSnake(name)+"_UNSET";
 	}
 
 	/**
@@ -135,6 +126,9 @@ public record OneOfField(
 		return fields.stream().map(field -> field.parserFieldsSetMethodCase()).collect(Collectors.joining("\n"));
 	}
 
+	public String getEnumClassRef() {
+		return parentMessageName+"."+ nameCamelFirstUpper()+"OneOfType";
+	}
 
 	@Override
 	public String toString() {

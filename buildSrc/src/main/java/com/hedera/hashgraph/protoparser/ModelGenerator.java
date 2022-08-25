@@ -27,7 +27,7 @@ import static com.hedera.hashgraph.protoparser.EnumGenerator.EnumValue;
  * Code generator that parses protobuf files and generates nice Java source for record files for each message type and
  * enum.
  */
-public class RecordAndEnumGenerator {
+public class ModelGenerator {
 	/** Record for a field doc tempory storage */
 	private record FieldDoc(String fieldName, String fieldComment) {}
 
@@ -39,7 +39,7 @@ public class RecordAndEnumGenerator {
 	 * @param destinationSrcDir the generated source directory to write files into
 	 * @throws IOException if there was a problem writing files
 	 */
-	static void generateRecordsAndEnums(File protoFile, File destinationSrcDir, final LookupHelper lookupHelper) throws IOException {
+	static void generateModel(File protoFile, File destinationSrcDir, final LookupHelper lookupHelper) throws IOException {
 		generate(protoFile, destinationSrcDir, lookupHelper);
 	}
 
@@ -121,7 +121,7 @@ public class RecordAndEnumGenerator {
 									/**
 									 * Enum for the type of "%s" oneof value
 									 */""".formatted(oneOfField.name());
-				final String enumString = createEnum(FIELD_INDENT,enumComment ,"",enumName,maxIndex,enumValues);
+				final String enumString = createEnum(FIELD_INDENT,enumComment ,"",enumName,maxIndex,enumValues, true);
 				oneofEnums.add(enumString);
 				fields.add(oneOfField);
 				fieldDocs.add(new FieldDoc(oneOfField.nameCamelFirstLower(), "<b>("+minIndex+" to "+maxIndex+")</b> "+ cleanJavaDocComment(oneOfField.comment())));
@@ -163,6 +163,25 @@ public class RecordAndEnumGenerator {
 			recordJavaDoc += "\n */";
 			javaDocComment = recordJavaDoc;
 		}
+		String bodyContent = "";
+		if (fields.stream().anyMatch(f -> f instanceof OneOfField)) {
+			bodyContent += """
+					public %s {
+					%s
+					}
+					
+					""".formatted(javaRecordName,
+					fields.stream()
+							.filter(f -> f instanceof OneOfField)
+							.map(f -> FIELD_INDENT+"""
+									if (%s == null) {
+										throw new NullPointerException("An OneOf '%s' must be supplied");
+									}""".formatted(f.nameCamelFirstLower(),f.nameCamelFirstLower()).replaceAll("\n","\n"+FIELD_INDENT))
+							.collect(Collectors.joining("\n"))
+					).replaceAll("\n","\n"+FIELD_INDENT);
+		}
+
+		bodyContent += oneofEnums.stream().collect(Collectors.joining("\n    "));
 
 		try (FileWriter javaWriter = new FileWriter(javaFile.toFile())) {
 			javaWriter.write("""
@@ -172,7 +191,7 @@ public class RecordAndEnumGenerator {
 					%spublic record %s(
 					    %s
 					){
-					    %s
+						%s
 					}
 					""".formatted(
 					javaPackage,
@@ -183,7 +202,7 @@ public class RecordAndEnumGenerator {
 					fields.stream().map(field ->
 						FIELD_INDENT+field.javaFieldType() + " " + field.nameCamelFirstLower()
 					).collect(Collectors.joining(",\n    ")),
-					oneofEnums.stream().collect(Collectors.joining("\n    "))
+					bodyContent
 			));
 		}
 	}

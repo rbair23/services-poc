@@ -196,16 +196,16 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 		final String fieldNameToSet = parent != null ? parent.name() : name;
 		if (optional()) {
 			if (parent != null) { // one of
-				return "case %d -> this.%s = new OneOf<>(%d,%s.%sOneOfType.%s,Optional.of(input));"
-						.formatted(fieldNumber, fieldNameToSet, fieldNumber,  parent.parentMessageName(), snakeToCamel(parent.name(), true),camelToUpperSnake(name));
+				return "case %d -> this.%s = new OneOf<>(%s.%sOneOfType.%s,Optional.of(input));"
+						.formatted(fieldNumber, fieldNameToSet, parent.parentMessageName(), snakeToCamel(parent.name(), true),camelToUpperSnake(name));
 			} else {
 				return "case %d -> this.%s = Optional.of(input);".formatted(fieldNumber, fieldNameToSet);
 			}
 		} else if (type == FieldType.MESSAGE) {
 			final String parserClassName = messageType + ParserGenerator.PASER_JAVA_FILE_SUFFIX;
 			final String valueToSet = parent != null ?
-					"new OneOf<>(%d,%s.%sOneOfType.%s,new %s().parse(input))"
-							.formatted(fieldNumber,  parent.parentMessageName(), snakeToCamel(parent.name(), true), camelToUpperSnake(name), parserClassName) :
+					"new OneOf<>(%s.%sOneOfType.%s,new %s().parse(input))"
+							.formatted(parent.parentMessageName(), snakeToCamel(parent.name(), true), camelToUpperSnake(name), parserClassName) :
 					"new %s().parse(input)".formatted(parserClassName);
 			if (repeated) {
 				return """
@@ -231,7 +231,7 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 			}
 		} else {
 			final String valueToSet = parent != null ?
-					"new OneOf<>(%d,%s.%sOneOfType.%s,input)".formatted(fieldNumber,  parent.parentMessageName(), snakeToCamel(parent.name(), true),camelToUpperSnake(name)) :
+					"new OneOf<>(%s.%sOneOfType.%s,input)".formatted(parent.parentMessageName(), snakeToCamel(parent.name(), true),camelToUpperSnake(name)) :
 					"input";
 			return "case %d -> this.%s = %s;".formatted(fieldNumber, fieldNameToSet,valueToSet);
 		}

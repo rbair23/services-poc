@@ -106,6 +106,7 @@ public class ParserGenerator {
 		String deprectaed = "";
 		final List<Field> fields = new ArrayList<>();
 		final Set<String> imports = new TreeSet<>();
+		final List<String> oneOfUnsetConstants = new ArrayList<>();
 		final String moidelJavaPackage = computeJavaPackage(MODELS_DEST_PACKAGE, dirName);
 		imports.add(moidelJavaPackage);
 		for(var item: msgDef.messageBody().messageElement()) {
@@ -115,6 +116,9 @@ public class ParserGenerator {
 				final var field = new OneOfField(item.oneof(), modelClassName, lookupHelper);
 				fields.add(field);
 				field.addAllNeededImports(imports, true, true, false);
+				oneOfUnsetConstants.add(
+						"    public static final OneOf<%s> %s = new OneOf<>(%s.UNSET,null);"
+						.formatted(field.getEnumClassRef(),camelToUpperSnake(field.name())+"_UNSET", field.getEnumClassRef()));
 			} else if (item.mapField() != null) { // process map fields
 				throw new IllegalStateException("Encountered a mapField that was not handled in "+ parserClassName);
 			} else if (item.reserved() != null) { // process reserved
@@ -148,6 +152,8 @@ public class ParserGenerator {
 					 */
 					public class %s extends ProtoParser {
 					
+					%s
+					
 						// -- REUSED TEMP STATE FIELDS --------------------------------------
 						
 					%s
@@ -172,6 +178,7 @@ public class ParserGenerator {
 						computeJavaPackage(SCHEMAS_DEST_PACKAGE, dirName) + "." + modelClassName+ SchemaGenerator.SCHEMA_JAVA_FILE_SUFFIX,
 						modelClassName,
 						parserClassName,
+						oneOfUnsetConstants.stream().collect(Collectors.joining("\n")),
 						fields.stream().map(field -> {
 							return "    private %s %s = %s;".formatted(field.javaFieldType(), field.name(), field.javaDefault());
 						}).collect(Collectors.joining("\n")),
