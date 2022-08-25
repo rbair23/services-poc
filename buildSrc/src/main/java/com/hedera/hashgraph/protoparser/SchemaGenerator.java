@@ -113,7 +113,7 @@ public class SchemaGenerator {
 				final var field = new OneOfField(item.oneof(), modelClassName, lookupHelper);
 				fields.add(field);
 				field.addAllNeededImports(imports, true, false, false);
-			} else if (item.mapField() != null) { // process map fields
+			} else if (item.mapField() != null) { // process map flattenedFields
 				throw new IllegalStateException("Encountered a mapField that was not handled in "+ parserClassName);
 			} else if (item.reserved() != null) { // process reserved
 				// reserved are not needed
@@ -177,7 +177,13 @@ public class SchemaGenerator {
 		}
 	}
 
-	private static String generateGetField(final List<Field> fields) {
+	/**
+	 * Generate getField method to get a field definition given a field number
+	 *
+	 * @param flattenedFields flattened list of all fields, with oneof's flattened
+	 * @return source code string for getField method
+	 */
+	private static String generateGetField(final List<Field> flattenedFields) {
 		return 	"""		
 					/**
 					 * Get a field definition given a field number
@@ -191,8 +197,8 @@ public class SchemaGenerator {
 							default -> null;
 						};
 					}
-				""".formatted(fields.stream()
-											.map(Field::parserGetFieldsDefCase)
+				""".formatted(flattenedFields.stream()
+											.map(Field::schemaGetFieldsDefCase)
 											.collect(Collectors.joining("\n            ")));
 	}
 

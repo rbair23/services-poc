@@ -19,6 +19,12 @@ import static com.hedera.hashgraph.protoparser.Common.snakeToCamel;
 public record SingleField(boolean repeated, FieldType type, int fieldNumber, String name, String messageType,
 						  String messageTypeModelPackage, String messageTypeParserPackage, String messageTypeWriterPackage,
 						  String comment, boolean depricated, OneOfField parent) implements Field {
+	/**
+	 * Construct a SingleField from a parsed field context
+	 *
+	 * @param fieldContext the field context to extra field data from
+	 * @param lookupHelper loookup helper for finding packages and other global context data
+	 */
 	public SingleField(Protobuf3Parser.FieldContext fieldContext, final LookupHelper lookupHelper) {
 		this(fieldContext.REPEATED() != null,
 				FieldType.of(fieldContext.type_(), lookupHelper),
@@ -37,6 +43,12 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 		);
 	}
 
+	/**
+	 * Construct a SingleField from a parsed oneof sub field context
+	 *
+	 * @param fieldContext the field context to extra field data from
+	 * @param lookupHelper loookup helper for finding packages and other global context data
+	 */
 	public SingleField(Protobuf3Parser.OneofFieldContext fieldContext, final OneOfField parent,  final LookupHelper lookupHelper) {
 		this(false,
 				FieldType.of(fieldContext.type_(), lookupHelper),
@@ -55,20 +67,9 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 		);
 	}
 
-	private static boolean getDepricatedOption(Protobuf3Parser.FieldOptionsContext optionContext) {
-		boolean deprecated = false;
-		if (optionContext != null) {
-			for (var option : optionContext.fieldOption()) {
-				if ("deprecated".equals(option.optionName().getText())) {
-					deprecated = true;
-				} else {
-					System.err.println("Unhandled Option on emum: "+optionContext.getText());
-				}
-			}
-		}
-		return deprecated;
-	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean optional() { // Move logic for checking built in types to common
 		return type == SingleField.FieldType.MESSAGE && (
@@ -87,11 +88,18 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 		);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String protobufFieldType() {
 		return type == SingleField.FieldType.MESSAGE ? messageType : type.javaType;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public String javaFieldType() {
 		String fieldType = switch(type) {
 			case MESSAGE -> messageType;
@@ -126,6 +134,10 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 		return fieldType;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void addAllNeededImports(Set<String> imports, boolean modelImports,boolean parserImports,
 			final boolean writerImports) {
 		if (repeated || optional()) imports.add("java.util");
@@ -134,16 +146,22 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 		if (messageTypeWriterPackage != null && writerImports) imports.add(messageTypeWriterPackage);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public String parseCode() {
-		if (repeated && type == FieldType.MESSAGE) {
-			return "new %s().parse(input)".formatted(messageType + ParserGenerator.PASER_JAVA_FILE_SUFFIX);
-		} else if (type == FieldType.MESSAGE) {
+		if (type == FieldType.MESSAGE) {
 			return "new %s().parse(input)".formatted(messageType + ParserGenerator.PASER_JAVA_FILE_SUFFIX);
 		} else {
 			return "input";
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public String javaDefault() {
 		if (optional()) {
 			return "Optional.empty()";
@@ -154,15 +172,26 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public String schemaFieldsDef() {
 		return "    public static final FieldDefinition %s = new FieldDefinition(\"%s\", FieldType.%s, %s, %d);"
 				.formatted(camelToUpperSnake(name), name, type.fieldType(), repeated, fieldNumber);
 	}
 
-	public String parserGetFieldsDefCase() {
+	/**
+	 * {@inheritDoc}
+	 */
+	public String schemaGetFieldsDefCase() {
 		return "case %d -> %s;".formatted(fieldNumber, camelToUpperSnake(name));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public String parserFieldsSetMethodCase() {
 		final String fieldNameToSet = parent != null ? parent.name() : name;
 		if (optional()) {
@@ -206,5 +235,27 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 					"input";
 			return "case %d -> this.%s = %s;".formatted(fieldNumber, fieldNameToSet,valueToSet);
 		}
+	}
+
+	// ====== Staic Utility Methods ============================
+
+	/**
+	 * Extract if a field is depricated or not from the protobuf options on the field
+	 *
+	 * @param optionContext protobuf options from parser
+	 * @return true if field has depricated option, otherwise false
+	 */
+	private static boolean getDepricatedOption(Protobuf3Parser.FieldOptionsContext optionContext) {
+		boolean deprecated = false;
+		if (optionContext != null) {
+			for (var option : optionContext.fieldOption()) {
+				if ("deprecated".equals(option.optionName().getText())) {
+					deprecated = true;
+				} else {
+					System.err.println("Unhandled Option on emum: "+optionContext.getText());
+				}
+			}
+		}
+		return deprecated;
 	}
 }

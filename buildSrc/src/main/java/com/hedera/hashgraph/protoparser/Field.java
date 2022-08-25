@@ -71,28 +71,97 @@ public interface Field {
 	 */
 	public String javaFieldType();
 
+	/**
+	 * Add all the needed imports for this field to the supplied set.
+	 *
+	 * @param imports set of imports to add to, this contains packages not classes. They are always imported as ".*".
+	 * @param modelImports if imports for this fields generated model classes should be added
+	 * @param parserImports if imports for this fields generated parser classes should be added
+	 * @param writerImports if imports for this fields generated weriter classes should be added
+	 */
 	public void addAllNeededImports(Set<String> imports, boolean modelImports,boolean parserImports,
 			final boolean writerImports);
 
+	/**
+	 * Get the java code to parse the value for this field from input
+	 *
+	 * @return java source code to parse
+	 */
 	public String parseCode();
 
+	/**
+	 * Get the java code default value for this field, "null" for object types
+	 *
+	 * @return code for default value
+	 */
 	public String javaDefault();
 
+	/**
+	 * Get the field definiations line of code for schema file for this field. One line for single fields and multiple
+	 * for oneofs.
+	 *
+	 * @return field definition lines of code
+	 */
 	public String schemaFieldsDef();
-	public String parserGetFieldsDefCase();
+
+	/**
+	 * Get the schema case statement for getting the field definition by field number
+	 *
+	 * @return java source code for case statement to get field def for field number
+	 */
+	public String schemaGetFieldsDefCase();
+
+	/**
+	 * Get the case statement for seting this method to go in parser set method code
+	 *
+	 * @return java source code for case statement setting this field
+	 */
 	public String parserFieldsSetMethodCase();
+
+	/**
+	 * Get the java doc comment for this field
+	 *
+	 * @return java doc comment
+	 */
 	public String comment();
+
+	/**
+	 * Get if this field is depericated or not
+	 *
+	 * @return true if field is depericated, otherwise false
+	 */
+	public boolean depricated();
+
+	/**
+	 * Get the message type for this field if it is of type message otherwise null
+	 *
+	 * @return message type or null if not a message type field
+	 */
 	public default String messageType() {
 		return null;
 	};
-	public boolean depricated();
+
+	/**
+	 * Get if this field is optional, optionals are handled in protobuf by value type objects for primatives
+	 *
+	 * @return true if this field is option by use of a protobuf value type, otherwise false
+	 */
 	public default boolean optional() {
 		return false;
 	}
+
+	/**
+	 * Get the parent field for this field, null if there is no parent like in the case of a single field.
+	 *
+	 * @return this fields parent field for oneof fields
+	 */
 	public default OneOfField parent() {
 		return null;
 	}
 
+	/**
+	 * Field type enum for use in field classes
+	 */
 	public enum FieldType {
 		MESSAGE("Object", "null"),
 		ENUM("int", "null"),

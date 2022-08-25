@@ -19,6 +19,13 @@ public record OneOfField(
 		boolean depricated
 ) implements Field {
 
+	/**
+	 * Create a OneOf field from parser context
+	 *
+	 * @param oneOfContext the parsed one of field
+	 * @param parentMessageName the name of the parent message
+	 * @param lookupHelper helper for accessing global context
+	 */
 	public OneOfField(final Protobuf3Parser.OneofContext oneOfContext, final String parentMessageName, final LookupHelper lookupHelper) {
 		this(parentMessageName,
 			oneOfContext.oneofName().getText(),
@@ -32,35 +39,34 @@ public record OneOfField(
 		}
 	}
 
-	private static boolean getDepricatedOption(List<Protobuf3Parser.OptionStatementContext> optionContext) {
-		boolean deprecated = false;
-		if (optionContext != null) {
-			for (var option : optionContext) {
-				if ("deprecated".equals(option.optionName().getText())) {
-					deprecated = true;
-				} else {
-					System.err.println("Unhandled Option on oneof: "+option.optionName().getText());
-				}
-			}
-		}
-		return deprecated;
-	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public FieldType type() {
 		return FieldType.ONE_OF;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int fieldNumber() {
 		return -1;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String protobufFieldType() {
 		return "oneof";
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String javaFieldType() {
 		String commonType = null;
@@ -77,6 +83,9 @@ public record OneOfField(
 		return "OneOf<"+parentMessageName+"."+ nameCamelFirstUpper()+"OneOfType, "+commonType+">";
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void addAllNeededImports(final Set<String> imports, boolean modelImports,boolean parserImports,
 			final boolean writerImports) {
@@ -86,34 +95,46 @@ public record OneOfField(
 		}
 	}
 
+	/**
+	 * N/A for OneOfField
+	 */
 	@Override
 	public String parseCode() {
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String javaDefault() {
 		return "null";
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public String schemaFieldsDef() {
 		return fields.stream().map(field -> field.schemaFieldsDef()).collect(Collectors.joining("\n"));
 	}
 
-	public String parserGetFieldsDefCase() {
-		return fields.stream().map(field -> field.parserGetFieldsDefCase()).collect(Collectors.joining("\n            "));
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String schemaGetFieldsDefCase() {
+		return fields.stream().map(field -> field.schemaGetFieldsDefCase()).collect(Collectors.joining("\n            "));
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public String parserFieldsSetMethodCase() {
 		return fields.stream().map(field -> field.parserFieldsSetMethodCase()).collect(Collectors.joining("\n"));
 	}
 
-	public String comment(){
-		return comment;
-	}
-
-	public boolean depricated() {
-		return false; // TODO is there a better answer here
-	}
 
 	@Override
 	public String toString() {
@@ -125,5 +146,27 @@ public record OneOfField(
 				", repeated=" + repeated +
 				", depricated=" + depricated +
 				'}';
+	}
+
+	// ====== Staic Utility Methods ============================
+
+	/**
+	 * Extract if a field is depricated or not from the protobuf options on the field
+	 *
+	 * @param optionContext protobuf options from parser
+	 * @return true if field has depricated option, otherwise false
+	 */
+	private static boolean getDepricatedOption(List<Protobuf3Parser.OptionStatementContext> optionContext) {
+		boolean deprecated = false;
+		if (optionContext != null) {
+			for (var option : optionContext) {
+				if ("deprecated".equals(option.optionName().getText())) {
+					deprecated = true;
+				} else {
+					System.err.println("Unhandled Option on oneof: "+option.optionName().getText());
+				}
+			}
+		}
+		return deprecated;
 	}
 }

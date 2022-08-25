@@ -176,14 +176,19 @@ public class ParserGenerator {
 							return "    private %s %s = %s;".formatted(field.javaFieldType(), field.name(), field.javaDefault());
 						}).collect(Collectors.joining("\n")),
 						generateParseMethods(modelClassName, fields),
-						generateGetFieldDefinition(modelClassName)+"\n"+generateResetMethod(fields),
+						generateGetFieldDefinition()+"\n"+generateResetMethod(fields),
 						generateFieldSetMethods(fields)
 					)
 			);
 		}
 	}
 
-	private static String generateGetFieldDefinition(final String modelClassName) {
+	/**
+	 * Generate get field definition method, it just deligates to the schema to get the answer
+	 *
+	 * @return source code for getFieldDefinition method
+	 */
+	private static String generateGetFieldDefinition() {
 		return 	"""			   
 						    /**
 						     * get the FieldDefinition for given field number
@@ -195,7 +200,7 @@ public class ParserGenerator {
 							protected FieldDefinition getFieldDefinition(final int fieldNumber) {
 								return getField(fieldNumber);
 							}
-						""".formatted(modelClassName);
+						""";
 	}
 
 	/**
@@ -346,5 +351,4 @@ public class ParserGenerator {
 				)
 				.collect(Collectors.joining("\n"));
 	}
-
 }
