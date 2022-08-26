@@ -138,13 +138,19 @@ public class WriterGenerator {
 					import java.io.OutputStream;
 					import com.hedera.hashgraph.protoparse.ProtoOutputStream;
 					%s
+					import static %s.*;
 										
 					/**
 					 * Writer for %s model object. Generate based on protobuf schema.
 					 */
-					@SuppressWarnings({"unchecked", "OptionalAssignedToNull"})
 					public final class %s {
-						// -- WRITE METHODS ---------------------------------------------
+						/**
+						 * Write out a %s model to output stream in protobuf format.
+						 * 
+						 * @param data The input model data to write
+						 * @param out The output stream to write to
+						 * @throws IOException If there is a problem writing
+						 */
 						public static void write(%s data, OutputStream out) throws IOException {
 							final ProtoOutputStream pout = new ProtoOutputStream(%s::valid,out);
 							%s
@@ -155,8 +161,10 @@ public class WriterGenerator {
 						imports.isEmpty() ? "" : imports.stream()
 								.filter(input -> !input.equals(javaPackage))
 								.collect(Collectors.joining(".*;\nimport ","\nimport ",".*;\n")),
+						computeJavaPackage(SCHEMAS_DEST_PACKAGE, dirName)+"."+schemaClassName,
 						modelClassName,
 						writerClassName,
+						modelClassName,
 						modelClassName,
 						schemaClassName,
 						fieldWriteLines
@@ -174,7 +182,7 @@ public class WriterGenerator {
 
 	private static String generateFieldWriteLines(final Field field, final String schemaClassName, final String getValueCode, final Set<String> imports) {
 		final String fieldName = field.nameCamelFirstLower();
-		final String fieldDef = schemaClassName+"."+camelToUpperSnake(field.name());
+		final String fieldDef = camelToUpperSnake(field.name());
 		if (field instanceof OneOfField) {
 			final OneOfField oneOfField = (OneOfField)field;
 			final String oneOfName = field.name()+"OneOf";
