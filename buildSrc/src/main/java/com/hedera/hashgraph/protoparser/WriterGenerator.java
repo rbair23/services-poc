@@ -14,12 +14,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.hedera.hashgraph.protoparser.Common.MODELS_DEST_PACKAGE;
-import static com.hedera.hashgraph.protoparser.Common.SCHEMAS_DEST_PACKAGE;
-import static com.hedera.hashgraph.protoparser.Common.WRITERS_DEST_PACKAGE;
-import static com.hedera.hashgraph.protoparser.Common.camelToUpperSnake;
-import static com.hedera.hashgraph.protoparser.Common.capitalizeFirstLetter;
-import static com.hedera.hashgraph.protoparser.Common.computeJavaPackage;
+import static com.hedera.hashgraph.protoparser.Common.*;
 import static com.hedera.hashgraph.protoparser.SchemaGenerator.SCHEMA_JAVA_FILE_SUFFIX;
 
 /**
@@ -184,71 +179,64 @@ public class WriterGenerator {
 			final OneOfField oneOfField = (OneOfField)field;
 			final String oneOfName = field.name()+"OneOf";
 			return """
-					final var %s = data.%s(); 
-					if(%s != null) {
-						switch(%s.kind()) {
+					final var %s = data.%s();
+					switch(%s.kind()) {
 					%s
-						}
 					}""".formatted(
-					oneOfName,fieldName,oneOfName,oneOfName,
+					oneOfName,fieldName,oneOfName,
 					oneOfField.fields().stream().map(f ->
-							 			"""
- 							                    case %s -> {
- 							                %s
- 							            }"""
-									.formatted(camelToUpperSnake(f.name()), generateFieldWriteLines(f,schemaClassName,"((%s)%s.as())".formatted(f.javaFieldType(),oneOfName), imports))
-												.replaceAll("\n","\n        "))
+							 			FIELD_INDENT+"case %s -> %s"
+									.formatted(camelToUpperSnake(f.name()), generateFieldWriteLines(f,schemaClassName,"%s.as()".formatted(oneOfName), imports)))
 							.collect(Collectors.joining("\n"))
 
 			).replaceAll("\n","\n		");
 		} else {
 			final String writeMethodName = mapToWriteMethod(field);
 			if(field.optional()) {
-				System.out.println("OPTIONAL field = " + field);
 				return switch (field.messageType()) {
-					case "EnumValue" -> "if (%s != null && %s.isPresent()) pout.writeEnum(%s, %s.get().protobufOrdinal());"
-							.formatted(getValueCode, getValueCode, fieldDef, getValueCode);
-					case "StringValue" -> "if (%s != null && !%s.orElse(\"\").isEmpty()) pout.writeString(%s, %s.get());"
-							.formatted(getValueCode, getValueCode, fieldDef,getValueCode);
-					case "BoolValue" -> "if (%s != null && %s.orElse(false)) pout.writeBoolean(%s, true);"
-							.formatted(getValueCode, getValueCode, fieldDef);
-					case "Int32Value","UInt32Value","SInt32Value" -> "if (%s != null && %s.isPresent()) pout.writeInteger(%s, %s.get());"
-							.formatted(getValueCode, getValueCode, fieldDef, getValueCode);
-					case "Int64Value","UInt64Value","SInt64Value" -> "if (%s != null && %s.isPresent()) pout.writeLong(%s, %s.get());"
-							.formatted(getValueCode, getValueCode, fieldDef, getValueCode);
-					case "FloatValue" -> "if (%s != null && %s.isPresent()) pout.writeFloat(%s, %s.get());"
-							.formatted(getValueCode, getValueCode, fieldDef, getValueCode);
-					case "DoubleValue" -> "if (%s != null && %s.isPresent()) pout.writeDouble(%s, %s.get());"
-							.formatted(getValueCode, getValueCode, fieldDef, getValueCode);
-					case "BytesValue" -> "if (%s != null && %s.isPresent()) pout.writeBytes(%s, %s.get());"
-							.formatted(getValueCode, getValueCode, fieldDef, getValueCode);
+					case "EnumValue" -> "pout.writeOptionalEnum(%s, %s);"
+							.formatted(fieldDef, getValueCode);
+					case "StringValue" -> "pout.writeOptionalString(%s, %s);"
+							.formatted(fieldDef,getValueCode);
+					case "BoolValue" -> "pout.writeOptionalBoolean(%s, %s);"
+							.formatted(fieldDef, getValueCode);
+					case "Int32Value","UInt32Value","SInt32Value" -> "pout.writeOptionalInteger(%s, %s);"
+							.formatted(fieldDef, getValueCode);
+					case "Int64Value","UInt64Value","SInt64Value" -> "pout.writeOptionalLong(%s, %s);"
+							.formatted(fieldDef, getValueCode);
+					case "FloatValue" -> "pout.writeOptionalFloat(%s, %s);"
+							.formatted(fieldDef, getValueCode);
+					case "DoubleValue" -> "pout.writeOptionalDouble(%s, %s);"
+							.formatted(fieldDef, getValueCode);
+					case "BytesValue" -> "pout.writeOptionalBytes(%s, %s);"
+							.formatted(fieldDef, getValueCode);
 					default -> throw new UnsupportedOperationException("Unhandled optional message type:"+field.messageType());
 				};
 			} else if (field.repeated()) {
 				return switch(field.type()) {
-					case ENUM -> "if (%s != null && !%s.isEmpty()) pout.writeEnumList(%s, %s.stream().map(e -> e.protobufOrdinal()).collect(java.util.stream.Collectors.toList()));"
-							.formatted(getValueCode, getValueCode, fieldDef, getValueCode);
-					case MESSAGE -> "if (%s != null && !%s.isEmpty()) pout.writeMessageList(%s, %s, %s::write);"
-							.formatted(getValueCode,getValueCode, fieldDef,getValueCode,
+					case ENUM -> "pout.writeEnumList(%s, %s);"
+							.formatted(fieldDef, getValueCode);
+					case MESSAGE -> "pout.writeMessageList(%s, %s, %s::write);"
+							.formatted(fieldDef,getValueCode,
 									capitalizeFirstLetter(field.messageType())+ WRITER_JAVA_FILE_SUFFIX
 							);
-					default -> "if (%s != null && !%s.isEmpty()) pout.write%sList(%s, %s);"
-							.formatted(getValueCode, getValueCode, writeMethodName, fieldDef, getValueCode);
+					default -> "pout.write%sList(%s, %s);"
+							.formatted(writeMethodName, fieldDef, getValueCode);
 				};
 			} else {
 				return switch(field.type()) {
-					case ENUM -> "if (%s != null) pout.writeEnum(%s, %s.protobufOrdinal());"
-							.formatted(getValueCode, fieldDef, getValueCode);
-					case STRING -> "if (%s != null && !%s.isEmpty()) pout.writeString(%s, %s);"
-							.formatted(getValueCode, getValueCode,fieldDef,getValueCode);
-					case MESSAGE -> "if (%s != null) pout.writeMessage(%s, %s, %s::write);"
-							.formatted(getValueCode,fieldDef,getValueCode,
+					case ENUM -> "pout.writeEnum(%s, %s);"
+							.formatted(fieldDef, getValueCode);
+					case STRING -> "pout.writeString(%s, %s);"
+							.formatted(fieldDef,getValueCode);
+					case MESSAGE -> "pout.writeMessage(%s, %s, %s::write);"
+							.formatted(fieldDef,getValueCode,
 									capitalizeFirstLetter(field.messageType())+ WRITER_JAVA_FILE_SUFFIX
 							);
-					case BOOL -> "if (%s) pout.writeBoolean(%s, true);"
-							.formatted(getValueCode, fieldDef);
-					default -> "if (%s != %s) pout.write%s(%s, %s);"
-							.formatted(getValueCode, field.javaDefault(), writeMethodName, fieldDef, getValueCode);
+					case BOOL -> "pout.writeBoolean(%s, %s);"
+							.formatted(fieldDef,getValueCode);
+					default -> "pout.write%s(%s, %s);"
+							.formatted(writeMethodName, fieldDef, getValueCode);
 				};
 			}
 		}

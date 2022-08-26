@@ -113,19 +113,19 @@ public class EnumGenerator {
 		}
 		return """
 					%s
-					%spublic enum %s {
+					%spublic enum %s implements com.hedera.hashgraph.protoparse.EnumWithProtoOrdinal{
 					%s;
 						
 						/** The oneof field ordinal in protobuf for this type */
-						private final int protobufOrdinal;
+						private final int protoOrdinal;
 						
 						/**
 						 * OneOf Type Enum Constructor
 						 * 
-						 * @param protobufOrdinal The oneof field ordinal in protobuf for this type
+						 * @param protoOrdinal The oneof field ordinal in protobuf for this type
 						 */
-						%s(final int protobufOrdinal) {
-							this.protobufOrdinal = protobufOrdinal;
+						%s(final int protoOrdinal) {
+							this.protoOrdinal = protoOrdinal;
 						}
 						
 						/**
@@ -133,8 +133,8 @@ public class EnumGenerator {
 						 *
 						 * @return The oneof field ordinal in protobuf for this type 
 						 */
-						public int protobufOrdinal() {
-							return protobufOrdinal;
+						public int protoOrdinal() {
+							return protoOrdinal;
 						}
 						
 						/**
