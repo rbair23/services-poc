@@ -164,7 +164,7 @@ public class ModelGenerator {
 			javaDocComment = recordJavaDoc;
 		}
 		String bodyContent = "";
-		if (fields.stream().anyMatch(f -> f instanceof OneOfField)) {
+		if (fields.stream().anyMatch(f -> f instanceof OneOfField || f.optional())) {
 			bodyContent += """
 					public %s {
 					%s
@@ -172,10 +172,10 @@ public class ModelGenerator {
 					
 					""".formatted(javaRecordName,
 					fields.stream()
-							.filter(f -> f instanceof OneOfField)
+							.filter(f -> f instanceof OneOfField || f.optional())
 							.map(f -> FIELD_INDENT+"""
 									if (%s == null) {
-										throw new NullPointerException("An OneOf '%s' must be supplied");
+										throw new NullPointerException("Parameter '%s' must be supplied and can not be null");
 									}""".formatted(f.nameCamelFirstLower(),f.nameCamelFirstLower()).replaceAll("\n","\n"+FIELD_INDENT))
 							.collect(Collectors.joining("\n"))
 					).replaceAll("\n","\n"+FIELD_INDENT);
