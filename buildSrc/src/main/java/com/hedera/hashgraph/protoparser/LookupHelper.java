@@ -13,11 +13,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.hedera.hashgraph.protoparser.Common.MODELS_DEST_PACKAGE;
-import static com.hedera.hashgraph.protoparser.Common.PARSERS_DEST_PACKAGE;
-import static com.hedera.hashgraph.protoparser.Common.SCHEMAS_DEST_PACKAGE;
-import static com.hedera.hashgraph.protoparser.Common.WRITERS_DEST_PACKAGE;
-import static com.hedera.hashgraph.protoparser.Common.computeJavaPackageSuffix;
+import static com.hedera.hashgraph.protoparser.Common.*;
 
 /**
  * Class that manages packages and enum names that are used more than one place in code generation
@@ -85,6 +81,19 @@ public class LookupHelper {
 		final String suffix = packageSuffixMap.get(messageName);
 		if (suffix == null) return null;
 		return SCHEMAS_DEST_PACKAGE + packageSuffixMap.get(messageName);
+	}
+
+	/**
+	 * Get the Java package a test class should generated into for a given message. The directory structure for where
+	 * the message is relative to protobuf root is used as sub packages.
+	 *
+	 * @param messageName The name of the messgae
+	 * @return java package to put test class in
+	 */
+	public String getTestPackage(String messageName) {
+		final String suffix = packageSuffixMap.get(messageName);
+		if (suffix == null) return null;
+		return UNIT_TESTS_DEST_PACKAGE + packageSuffixMap.get(messageName);
 	}
 
 	/**

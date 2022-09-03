@@ -18,17 +18,12 @@ import static com.hedera.hashgraph.protoparser.Common.*;
 import static com.hedera.hashgraph.protoparser.SchemaGenerator.SCHEMA_JAVA_FILE_SUFFIX;
 
 /**
- * Code generator that parses protobuf files and generates schemas for each message type.
+ * Code generator that parses protobuf files and generates writers for each message type.
  */
 public class WriterGenerator {
 
 	/** Suffix for schema java classes */
 	public static final String WRITER_JAVA_FILE_SUFFIX = "Writer";
-
-	/** Record for a enum value tempory storage */
-	private record EnumValue(String name, boolean deprecated, String javaDoc) {}
-	/** Record for a field doc tempory storage */
-	private record FieldDoc(String fieldName, String fieldComment) {}
 
 	/**
 	 * Main generate method that process directory of protovuf files
@@ -41,7 +36,6 @@ public class WriterGenerator {
 	static void generateWriters(File protoDir, File destinationSrcDir, final LookupHelper lookupHelper) throws IOException {
 		generate(protoDir, destinationSrcDir,lookupHelper);
 	}
-
 
 	/**
 	 * Process a directory of protobuf files or indervidual protobuf file. Generating Java record clasess for each
@@ -109,7 +103,7 @@ public class WriterGenerator {
 			} else if (item.oneof() != null) { // process one ofs
 				final var field = new OneOfField(item.oneof(), modelClassName, lookupHelper);
 				fields.add(field);
-				field.addAllNeededImports(imports, true, false, true);
+				field.addAllNeededImports(imports, true, false, true, false);
 			} else if (item.mapField() != null) { // process map fields
 				throw new IllegalStateException("Encountered a mapField that was not handled in "+ writerClassName);
 			} else if (item.reserved() != null) { // process reserved
@@ -118,7 +112,7 @@ public class WriterGenerator {
 				final var field = new SingleField(item.field(), lookupHelper);
 				fields.add(field);
 				if (field.type() == Field.FieldType.MESSAGE) {
-					field.addAllNeededImports(imports, true, false, true);
+					field.addAllNeededImports(imports, true, false, true, false);
 				}
 			} else if (item.optionStatement() != null){
 				// no needed for now

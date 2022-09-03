@@ -6,6 +6,7 @@ description = "Hedera Protobuf API"
 
 dependencies {
     implementation(libs.proto.parse)
+    testImplementation("com.hedera.hashgraph:hedera-protobuf-java-api:0.29.1")
 }
 
 

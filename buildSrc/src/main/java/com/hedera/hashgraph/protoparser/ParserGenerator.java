@@ -28,7 +28,7 @@ import static com.hedera.hashgraph.protoparser.Common.*;
 public class ParserGenerator {
 
 	/** Suffix for parser java classes */
-	public static final String PASER_JAVA_FILE_SUFFIX = "ProtoParser";
+	public static final String PARSER_JAVA_FILE_SUFFIX = "ProtoParser";
 
 	/** Record for a enum value tempory storage */
 	private record EnumValue(String name, boolean deprecated, String javaDoc) {}
@@ -98,7 +98,7 @@ public class ParserGenerator {
 	private static void generateParserFile(Protobuf3Parser.MessageDefContext msgDef, String dirName, String javaPackage,
 			Path packageDir, final LookupHelper lookupHelper) throws IOException {
 		final var modelClassName = msgDef.messageName().getText();
-		final var parserClassName = modelClassName+ PASER_JAVA_FILE_SUFFIX;
+		final var parserClassName = modelClassName+ PARSER_JAVA_FILE_SUFFIX;
 		final var javaFile = packageDir.resolve(parserClassName + ".java");
 		String javaDocComment = (msgDef.docComment()== null) ? "" :
 				msgDef.docComment().getText()
@@ -115,7 +115,7 @@ public class ParserGenerator {
 			} else if (item.oneof() != null) { // process one ofs
 				final var field = new OneOfField(item.oneof(), modelClassName, lookupHelper);
 				fields.add(field);
-				field.addAllNeededImports(imports, true, true, false);
+				field.addAllNeededImports(imports, true, true, false, false);
 				oneOfUnsetConstants.add(
 						"    public static final OneOf<%s> %s = new OneOf<>(%s.UNSET,null);"
 						.formatted(field.getEnumClassRef(),camelToUpperSnake(field.name())+"_UNSET", field.getEnumClassRef()));
@@ -126,7 +126,7 @@ public class ParserGenerator {
 			} else if (item.field() != null && item.field().fieldName() != null) {
 				final var field = new SingleField(item.field(), lookupHelper);
 				fields.add(field);
-				field.addAllNeededImports(imports, true, true, false);
+				field.addAllNeededImports(imports, true, true, false, false);
 			} else if (item.optionStatement() != null){
 				// no needed for now
 			} else {
@@ -219,7 +219,7 @@ public class ParserGenerator {
 	private static String generateResetMethod(final List<Field> fields) {
 		return 	"""
 						    /**
-						     * Reset all fields to default values so we can start another parse job
+						     * Reset all fields to default values, so we can start another parse job
 						     */
 							private void reset() {
 								%s
@@ -309,6 +309,9 @@ public class ParserGenerator {
 					case "BytesValue" -> this == FieldMethodTypes.bytesField;
 					default -> fieldTypes.contains(field.type());
 				};
+			} if (field.repeated() && fieldTypes.contains(field.type()) &&
+					(field.type() == FieldType.BYTES || field.type() == FieldType.STRING)) {
+				return true;
 			} else {
 				return repeated == field.repeated() && fieldTypes.contains(field.type());
 			}
@@ -346,7 +349,10 @@ public class ParserGenerator {
 							}
 						""".formatted(
 							fieldMethodType.toString(),
-							fieldMethodType == FieldMethodTypes.objectField ? "InputStream" : fieldMethodType.javaType(),
+							switch (fieldMethodType) {
+								case objectField -> "InputStream";
+								default -> fieldMethodType.javaType();
+							},
 							fieldMethodType == FieldMethodTypes.objectField ? "throws IOException, MalformedProtobufException " : "",
 							flattenedFields.stream()
 									.filter(field -> fieldMethodType.matches(field))

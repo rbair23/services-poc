@@ -77,10 +77,11 @@ public interface Field {
 	 * @param imports set of imports to add to, this contains packages not classes. They are always imported as ".*".
 	 * @param modelImports if imports for this fields generated model classes should be added
 	 * @param parserImports if imports for this fields generated parser classes should be added
-	 * @param writerImports if imports for this fields generated weriter classes should be added
+	 * @param writerImports if imports for this fields generated writer classes should be added
+	 * @param testImports if imports for this fields generated test classes should be added
 	 */
 	public void addAllNeededImports(Set<String> imports, boolean modelImports,boolean parserImports,
-			final boolean writerImports);
+			final boolean writerImports, final boolean testImports);
 
 	/**
 	 * Get the java code to parse the value for this field from input
@@ -179,7 +180,7 @@ public interface Field {
 		SFIXED64("double", "0"),
 		STRING("String", "\"\""),
 		BOOL("boolean", "false"),
-		BYTES("byte[]", "null"),
+		BYTES("ByteBuffer", "ByteBuffer.allocate(0).asReadOnlyBuffer()"),
 		ONE_OF("OneOf", "null");
 
 		public final String javaType;

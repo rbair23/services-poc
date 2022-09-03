@@ -112,7 +112,7 @@ public class SchemaGenerator {
 			} else if (item.oneof() != null) { // process one ofs
 				final var field = new OneOfField(item.oneof(), modelClassName, lookupHelper);
 				fields.add(field);
-				field.addAllNeededImports(imports, true, false, false);
+				field.addAllNeededImports(imports, true, false, false, false);
 			} else if (item.mapField() != null) { // process map flattenedFields
 				throw new IllegalStateException("Encountered a mapField that was not handled in "+ parserClassName);
 			} else if (item.reserved() != null) { // process reserved

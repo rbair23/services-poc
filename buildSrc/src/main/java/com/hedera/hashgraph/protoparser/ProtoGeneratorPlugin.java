@@ -31,6 +31,7 @@ public abstract class ProtoGeneratorPlugin extends DefaultTask {
 				SchemaGenerator.generateSchemas(protoDir, generatedJavaMainDir, lookupHelper);
 				ParserGenerator.generateParsers(protoDir, generatedJavaMainDir, lookupHelper);
 				WriterGenerator.generateWriters(protoDir, generatedJavaMainDir, lookupHelper);
+				TestGenerator.generateUnitTests(protoDir, generatedJavaTestDir, lookupHelper);
 			} catch (Throwable e) {
 				e.printStackTrace();
 				throw e;

@@ -7,6 +7,7 @@ import com.hedera.hashgraph.hapi.model.TransactionBody;
 import com.hedera.hashgraph.hapi.model.base.SignedTransaction;
 import com.hedera.hashgraph.token.entity.Account;
 
+import java.nio.ByteBuffer;
 import java.util.Objects;
 
 /**
@@ -32,7 +33,7 @@ public class IngestCheckerImpl implements IngestChecker {
     }
 
     @Override
-    public void checkSignatures(byte[] signedTransactionBytes, SignatureMap signatureMap, KeyList keyList) {
+    public void checkSignatures(ByteBuffer signedTransactionBytes, SignatureMap signatureMap, KeyList keyList) {
         // TODO implement. For now assume it is always good
     }
 

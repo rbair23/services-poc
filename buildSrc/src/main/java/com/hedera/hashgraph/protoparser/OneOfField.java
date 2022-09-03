@@ -79,10 +79,10 @@ public record OneOfField(
 	 */
 	@Override
 	public void addAllNeededImports(final Set<String> imports, boolean modelImports,boolean parserImports,
-			final boolean writerImports) {
+			final boolean writerImports, final boolean testImports) {
 		imports.add("com.hedera.hashgraph.hapi");
 		for(var field:fields) {
-			field.addAllNeededImports(imports, modelImports, parserImports, writerImports);
+			field.addAllNeededImports(imports, modelImports, parserImports, writerImports, testImports);
 		}
 	}
 

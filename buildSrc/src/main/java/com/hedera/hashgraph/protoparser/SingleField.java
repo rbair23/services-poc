@@ -17,7 +17,8 @@ import static com.hedera.hashgraph.protoparser.Common.snakeToCamel;
  * @param messageType
  */
 public record SingleField(boolean repeated, FieldType type, int fieldNumber, String name, String messageType,
-						  String messageTypeModelPackage, String messageTypeParserPackage, String messageTypeWriterPackage,
+						  String messageTypeModelPackage, String messageTypeParserPackage,
+						  String messageTypeWriterPackage, String messageTypeTestPackage,
 						  String comment, boolean depricated, OneOfField parent) implements Field {
 	/**
 	 * Construct a SingleField from a parsed field context
@@ -37,6 +38,8 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 						lookupHelper.getParserPackage(fieldContext.type_().messageType().messageName().getText()),
 				(fieldContext.type_().messageType() == null || fieldContext.type_().messageType().messageName().getText() == null) ? null :
 						lookupHelper.getWriterPackage(fieldContext.type_().messageType().messageName().getText()),
+				(fieldContext.type_().messageType() == null || fieldContext.type_().messageType().messageName().getText() == null) ? null :
+						lookupHelper.getTestPackage(fieldContext.type_().messageType().messageName().getText()),
 				fieldContext.docComment() == null ? null : fieldContext.docComment().getText(),
 				getDepricatedOption(fieldContext.fieldOptions()),
 				null
@@ -61,6 +64,8 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 						lookupHelper.getParserPackage(fieldContext.type_().messageType().messageName().getText()),
 				(fieldContext.type_().messageType() == null) ? null :
 						lookupHelper.getWriterPackage(fieldContext.type_().messageType().messageName().getText()),
+				(fieldContext.type_().messageType() == null) ? null :
+						lookupHelper.getTestPackage(fieldContext.type_().messageType().messageName().getText()),
 				fieldContext.docComment() == null ? null : fieldContext.docComment().getText(),
 				getDepricatedOption(fieldContext.fieldOptions()),
 				parent
@@ -117,7 +122,7 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 			case "FloatValue" -> "Optional<Float>";
 			case "DoubleValue" -> "Optional<Double>";
 			case "BoolValue" -> "Optional<Boolean>";
-			case "BytesValue" -> "Optional<byte[]>";
+			case "BytesValue" -> "Optional<ByteBuffer>";
 			case "EnumValue" -> "Optional<"+snakeToCamel(messageType, true)+">";
 			default -> fieldType;
 		};
@@ -133,17 +138,26 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 		}
 		return fieldType;
 	}
+	public String javaFieldTypeForTest() {
+		return switch(type) {
+			case MESSAGE -> messageType;
+			case ENUM -> snakeToCamel(messageType, true);
+			default -> type.javaType;
+		};
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void addAllNeededImports(Set<String> imports, boolean modelImports,boolean parserImports,
-			final boolean writerImports) {
+			final boolean writerImports, final boolean testImports) {
 		if (repeated || optional()) imports.add("java.util");
+		if (type == FieldType.BYTES) imports.add("java.nio");
 		if (messageTypeModelPackage != null && modelImports) imports.add(messageTypeModelPackage);
 		if (messageTypeParserPackage != null && parserImports) imports.add(messageTypeParserPackage);
 		if (messageTypeWriterPackage != null && writerImports) imports.add(messageTypeWriterPackage);
+		if (messageTypeTestPackage != null && testImports) imports.add(messageTypeTestPackage);
 	}
 
 	/**
@@ -152,7 +166,7 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 	@Override
 	public String parseCode() {
 		if (type == FieldType.MESSAGE) {
-			return "new %s().parse(input)".formatted(messageType + ParserGenerator.PASER_JAVA_FILE_SUFFIX);
+			return "new %s().parse(input)".formatted(messageType + ParserGenerator.PARSER_JAVA_FILE_SUFFIX);
 		} else {
 			return "input";
 		}
@@ -166,7 +180,9 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 		if (optional()) {
 			return "Optional.empty()";
 		} else if (repeated) {
-			return "null";
+			return "Collections.emptyList()";
+		} else if (type == FieldType.ENUM) {
+			return messageType+".values()[0]";
 		} else {
 			return type.javaDefault;
 		}
@@ -177,8 +193,29 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 	 */
 	@Override
 	public String schemaFieldsDef() {
-		return "    public static final FieldDefinition %s = new FieldDefinition(\"%s\", FieldType.%s, %s, %d);"
-				.formatted(camelToUpperSnake(name), name, type.fieldType(), repeated, fieldNumber);
+		boolean isPartOfOneOf = parent != null;
+		if (optional()) {
+			final String optionalBaseFieldType = switch (messageType) {
+				case "StringValue" -> "STRING";
+				case "Int32Value" -> "INT_32";
+				case "UInt32Value" -> "UINT_32";
+				case "SInt32Value" -> "SINT_32";
+				case "Int64Value" -> "INT_64";
+				case "UInt64Value" -> "UINT_64";
+				case "SInt64Value" -> "SINT_64";
+				case "FloatValue" -> "FLOAT";
+				case "DoubleValue" -> "DOUBLE";
+				case "BoolValue" -> "BOOL";
+				case "BytesValue" -> "BYTES";
+				case "EnumValue" -> "ENUM";
+				default -> throw new UnsupportedOperationException("Unsupported optional field type found: "+type.javaType+" in "+this);
+			};
+			return "    public static final FieldDefinition %s = new FieldDefinition(\"%s\", FieldType.%s, %s, true, %s, %d);"
+					.formatted(camelToUpperSnake(name), name, optionalBaseFieldType, repeated, isPartOfOneOf, fieldNumber);
+		} else {
+			return "    public static final FieldDefinition %s = new FieldDefinition(\"%s\", FieldType.%s, %s, false, %s, %d);"
+					.formatted(camelToUpperSnake(name), name, type.fieldType(), repeated, isPartOfOneOf, fieldNumber);
+		}
 	}
 
 	/**
@@ -202,7 +239,7 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 				return "case %d -> this.%s = Optional.of(input);".formatted(fieldNumber, fieldNameToSet);
 			}
 		} else if (type == FieldType.MESSAGE) {
-			final String parserClassName = messageType + ParserGenerator.PASER_JAVA_FILE_SUFFIX;
+			final String parserClassName = messageType + ParserGenerator.PARSER_JAVA_FILE_SUFFIX;
 			final String valueToSet = parent != null ?
 					"new OneOf<>(%s.%sOneOfType.%s,new %s().parse(input))"
 							.formatted(parent.parentMessageName(), snakeToCamel(parent.name(), true), camelToUpperSnake(name), parserClassName) :
@@ -210,7 +247,7 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 			if (repeated) {
 				return """
 					case %d -> {
-									if (this.%s == null) {
+									if (this.%s.equals(Collections.emptyList())) {
 										this.%s = new ArrayList<>();
 									}
 									this.%s.add(%s);
@@ -229,6 +266,19 @@ public record SingleField(boolean repeated, FieldType type, int fieldNumber, Str
 				return "case %d -> this.%s = %s.fromProtobufOrdinal(input);".formatted(fieldNumber, fieldNameToSet,
 						snakeToCamel(messageType, true));
 			}
+		} else if (repeated && (type == FieldType.STRING || type == FieldType.BYTES)) {
+			final String valueToSet = parent != null ?
+					"new OneOf<>(%s.%sOneOfType.%s,input)".formatted(parent.parentMessageName(), snakeToCamel(parent.name(), true),camelToUpperSnake(name)) :
+					"input";
+			return """
+				case %d -> {
+								if (this.%s.equals(Collections.emptyList())) {
+									this.%s = new ArrayList<>();
+								}
+								this.%s.add(%s);
+							}"""
+					.formatted(fieldNumber, fieldNameToSet, fieldNameToSet, fieldNameToSet, valueToSet);
+
 		} else {
 			final String valueToSet = parent != null ?
 					"new OneOf<>(%s.%sOneOfType.%s,input)".formatted(parent.parentMessageName(), snakeToCamel(parent.name(), true),camelToUpperSnake(name)) :
