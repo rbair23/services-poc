@@ -173,10 +173,7 @@ public class ModelGenerator {
 					""".formatted(javaRecordName,
 					fields.stream()
 							.filter(f -> f instanceof OneOfField || f.optional())
-							.map(f -> FIELD_INDENT+"""
-									if (%s == null) {
-										throw new NullPointerException("Parameter '%s' must be supplied and can not be null");
-									}""".formatted(f.nameCamelFirstLower(),f.nameCamelFirstLower()).replaceAll("\n","\n"+FIELD_INDENT))
+							.map(ModelGenerator::generateCostructorCode)
 							.collect(Collectors.joining("\n"))
 					).replaceAll("\n","\n"+FIELD_INDENT);
 		}
@@ -207,4 +204,32 @@ public class ModelGenerator {
 		}
 	}
 
+	private static String generateCostructorCode(final Field f) {
+		StringBuilder sb = new StringBuilder(FIELD_INDENT+"""
+									if (%s == null) {
+										throw new NullPointerException("Parameter '%s' must be supplied and can not be null");
+									}""".formatted(f.nameCamelFirstLower(),f.nameCamelFirstLower()));
+		if (f instanceof OneOfField) {
+			final OneOfField oof = (OneOfField)f;
+			for (Field subField: oof.fields()) {
+				if(subField.optional()) {
+					sb.append("""
+       
+							// handle special case where protobuf does not have destination between a OneOf with optional 
+							// value of empty vs a unset OneOf.
+							if(%s.kind() == %sOneOfType.%s && ((Optional)%s.value()).isEmpty()) {
+								%s = new OneOf<>(%sOneOfType.UNSET, null);
+							}""".formatted(
+							f.nameCamelFirstLower(),
+							f.nameCamelFirstUpper(),
+							camelToUpperSnake(subField.name()),
+							f.nameCamelFirstLower(),
+							f.nameCamelFirstLower(),
+							f.nameCamelFirstUpper()
+					));
+				}
+			}
+		}
+		return sb.toString().replaceAll("\n","\n"+FIELD_INDENT);
+	}
 }

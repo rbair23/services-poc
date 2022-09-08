@@ -55,7 +55,7 @@ public record OneOfField(
 	 */
 	@Override
 	public int fieldNumber() {
-		return -1;
+		return fields.get(0).fieldNumber();
 	}
 
 	/**

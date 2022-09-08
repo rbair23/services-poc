@@ -248,7 +248,8 @@ public class TestGenerator {
 				if(subField instanceof SingleField) {
 					final String enumValueName = camelToUpperSnake(subField.name());
 					// special cases to break cyclic dependencies
-					if (!("THRESHOLD_KEY".equals(enumValueName) || "KEY_LIST".equals(enumValueName))) {
+					if (!("THRESHOLD_KEY".equals(enumValueName) || "KEY_LIST".equals(enumValueName)
+							|| "THRESHOLD_SIGNATURE".equals(enumValueName)|| "SIGNATURE_LIST".equals(enumValueName))) {
 						final String listStr;
 						if (subField.optional()) {
 							Field.FieldType convertedSubFieldType = getOptionalConvertedFieldType(subField);

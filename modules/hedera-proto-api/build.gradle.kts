@@ -9,6 +9,9 @@ dependencies {
     testImplementation("com.hedera.hashgraph:hedera-protobuf-java-api:0.29.1")
 }
 
+tasks.withType<Test>().configureEach {
+    maxParallelForks = 4
+}
 
 // ===== PROTOBUF GENERATION ===========================================================================================
 
