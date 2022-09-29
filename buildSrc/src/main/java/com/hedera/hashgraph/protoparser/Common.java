@@ -132,4 +132,20 @@ public class Common {
 				.replaceAll("\n\s+\\*\s+","\n"); // remove indenting and *
 	}
 
+	/**
+	 * Convert a field type like "long" to the Java object wrapper type "Long", or pass though if not java primative
+	 *
+	 * @param primativeFieldType java field type like "int" etc
+	 * @return java object wrapper type like "Integer" or pass though
+	 */
+	public static String javaPrimativeToObjectType(String primativeFieldType) {
+		return switch(primativeFieldType){
+			case "boolean" -> "Boolean";
+			case "int" -> "Integer";
+			case "long" -> "Long";
+			case "float" -> "Float";
+			case "double" -> "Double";
+			default -> primativeFieldType;
+		};
+	}
 }

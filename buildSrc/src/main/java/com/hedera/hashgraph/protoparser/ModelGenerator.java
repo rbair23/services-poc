@@ -102,6 +102,7 @@ public class ModelGenerator {
 		String deprectaed = "";
 		final List<Field> fields = new ArrayList<>();
 		final List<String> oneofEnums = new ArrayList<>();
+		final List<String> oneofGetters = new ArrayList<>();
 		final List<FieldDoc> fieldDocs = new ArrayList<>();
 		final Set<String> imports = new TreeSet<>();
 		for(var item: msgDef.messageBody().messageElement()) {
@@ -109,14 +110,39 @@ public class ModelGenerator {
 				generateRecordFile(item.messageDef(), javaPackage,packageDir,lookupHelper);
 			} else if (item.oneof() != null) { // process one ofs
 				final OneOfField oneOfField = new OneOfField(item.oneof(),javaRecordName, lookupHelper);
+				final String enumName = oneOfField.nameCamelFirstUpper()+"OneOfType";
 				int minIndex = oneOfField.fields().get(0).fieldNumber();
 				int maxIndex = oneOfField.fields().get(oneOfField.fields().size()-1).fieldNumber();
 				final Map<Integer,EnumValue> enumValues = new HashMap<>();
 				for(final Field field: oneOfField.fields()) {
 					final String fieldType = field.protobufFieldType();
+					final String javaFieldType = javaPrimativeToObjectType(field.javaFieldType());
 					enumValues.put(field.fieldNumber(), new EnumValue(field.name(),field.depricated(),field.comment()));
+					// generate getters for one ofs
+					oneofGetters.add("""
+							/**
+							 * Direct typed getter for one of field %s.
+							 * 
+							 * @return optional for one of value. Optional.empty() if one of is not this one
+							 */
+							public Optional<%s> %s() {
+								return %s.kind() == %s.%s ? Optional.of((%s)%s.value()) : Optional.empty();
+							}
+							""".formatted(
+							field.nameCamelFirstLower(),
+							javaFieldType,
+							field.nameCamelFirstLower(),
+							oneOfField.nameCamelFirstLower(),
+							enumName,
+							camelToUpperSnake(field.name()),
+							javaFieldType,
+							oneOfField.nameCamelFirstLower()
+					).replaceAll("\n","\n"+FIELD_INDENT));
+					if ("ByteBuffer".equals(fieldType)) imports.add("java.nio");
+					if (field.type() == Field.FieldType.MESSAGE){
+						field.addAllNeededImports(imports, true, false, false, false);
+					}
 				}
-				final String enumName = oneOfField.nameCamelFirstUpper()+"OneOfType";
 				final String enumComment = """
 									/**
 									 * Enum for the type of "%s" oneof value
@@ -163,7 +189,9 @@ public class ModelGenerator {
 			recordJavaDoc += "\n */";
 			javaDocComment = recordJavaDoc;
 		}
+		// === Build Body Content
 		String bodyContent = "";
+		// constructor
 		if (fields.stream().anyMatch(f -> f instanceof OneOfField || f.optional())) {
 			bodyContent += """
 					public %s {
@@ -177,13 +205,35 @@ public class ModelGenerator {
 							.collect(Collectors.joining("\n"))
 					).replaceAll("\n","\n"+FIELD_INDENT);
 		}
-
+		// oneof getters
+		bodyContent += oneofGetters.stream().collect(Collectors.joining("\n    "));
+		bodyContent += "\n"+FIELD_INDENT;
+		// builder copy method
+		bodyContent += """
+				/**
+				 * Return a builder for building a copy of this model object. It will be pre-populated with all the data from this 
+				 * model object.
+				 * 
+				 * @return a pre-populated builder
+				 */
+				Builder copyBuilder() {
+					return new Builder(%s);
+				}
+				
+				"""
+				.formatted(fields.stream().map(Field::nameCamelFirstLower).collect(Collectors.joining(", ")))
+				.replaceAll("\n","\n"+FIELD_INDENT);
+		// generate builder
+		bodyContent += generateBuilder(javaRecordName, fields, lookupHelper);
+		bodyContent += "\n"+FIELD_INDENT;
+		// oneof enums
 		bodyContent += oneofEnums.stream().collect(Collectors.joining("\n    "));
-
+		// === Build file
 		try (FileWriter javaWriter = new FileWriter(javaFile.toFile())) {
 			javaWriter.write("""
 					package %s;
 					%s
+					import java.util.Optional;
 					%s
 					%spublic record %s(
 					    %s
@@ -201,6 +251,98 @@ public class ModelGenerator {
 					).collect(Collectors.joining(",\n    ")),
 					bodyContent
 			));
+		}
+	}
+
+	private static String generateBuilder(final String javaRecordName, List<Field> fields,  final LookupHelper lookupHelper) {
+		List<String> builderMethods = new ArrayList<>();
+		for(Field field:fields) {
+			if (field.type() == Field.FieldType.ONE_OF) {
+				final OneOfField oneOfField = (OneOfField) field;
+				for (Field subField: oneOfField.fields()) {
+					builderMethods.add("""
+						public Builder %s(%s %s) {
+							this.%s = new OneOf<>(%s, %s);
+							return this;
+						}""".formatted(
+									subField.nameCamelFirstLower(),
+									subField.javaFieldType(),
+									subField.nameCamelFirstLower(),
+									field.nameCamelFirstLower(),
+									oneOfField.getEnumClassRef()+"."+camelToUpperSnake(subField.name()),
+									subField.nameCamelFirstLower()
+							)
+							.replaceAll("\n","\n"+FIELD_INDENT));
+				}
+			} else {
+				builderMethods.add("""
+						public Builder %s(%s %s) {
+							this.%s = %s;
+							return this;
+						}""".formatted(
+								field.nameCamelFirstLower(),
+								field.javaFieldType(),
+								field.nameCamelFirstLower(),
+								field.nameCamelFirstLower(),
+								field.nameCamelFirstLower()
+						)
+						.replaceAll("\n","\n"+FIELD_INDENT));
+			}
+		}
+		return """
+    
+			/**
+			 * Builder class for easy creation, ideal for clean code were performance is not critical. In critical performance 
+			 * paths use the constructor directly.
+			 */
+			public static final class Builder {
+				%s;
+		
+				/**
+				 * Create a empty builder
+				 */
+				public Builder() {}
+		
+				/**
+				 * Create a pre-populated builder
+				 */
+				public Builder(%s) {
+					%s;
+				}
+		
+				/**
+				 * Build a new model record with data set on builder
+				 */
+				public %s build() {
+					return new %s(%s);
+				}
+		
+				%s
+			}
+				""".formatted(
+					fields.stream().map(field ->
+									"private " + field.javaFieldType() + " " + field.nameCamelFirstLower() +
+											" = " + getDefaultValue(field,javaRecordName, lookupHelper)
+					).collect(Collectors.joining(";\n    ")),
+					fields.stream().map(field ->
+									field.javaFieldType() + " " + field.nameCamelFirstLower()
+					).collect(Collectors.joining(", ")),
+					fields.stream().map(field ->
+									"this." + field.nameCamelFirstLower() + " = " + field.nameCamelFirstLower()
+					).collect(Collectors.joining(";\n"+FIELD_INDENT+FIELD_INDENT)),
+					javaRecordName,
+					javaRecordName,
+					fields.stream().map(Field::nameCamelFirstLower).collect(Collectors.joining(", ")),
+					builderMethods.stream().collect(Collectors.joining("\n\n"+FIELD_INDENT))
+				)
+				.replaceAll("\n","\n"+FIELD_INDENT);
+	}
+
+	private static String getDefaultValue(Field field, final String messageName, final LookupHelper lookupHelper) {
+		if (field.type() == Field.FieldType.ONE_OF) {
+			return lookupHelper.getParserPackage(messageName) +"."+messageName+"ProtoParser."+field.javaDefault();
+		} else {
+			return field.javaDefault();
 		}
 	}
 
