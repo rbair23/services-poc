@@ -8,7 +8,7 @@ import com.hedera.hashgraph.hapi.model.base.ResponseCodeEnum;
 import com.hedera.hashgraph.hapi.model.base.SignedTransaction;
 import com.hedera.hashgraph.hapi.model.base.Transaction;
 import com.hedera.hashgraph.protoparse.MalformedProtobufException;
-import com.hedera.hashgraph.token.AccountService;
+import com.hedera.hashgraph.token.CryptoService;
 import com.swirlds.common.system.Platform;
 
 import java.util.Objects;
@@ -48,7 +48,7 @@ public final class IngestWorkflow {
      * Used for validating the payer account exists and sigs match and has sufficient
      * balance to pay network and node fees.
      */
-    private final AccountService accountService;
+    private final CryptoService cryptoService;
 
     /**
      * Used for submitting transactions.
@@ -59,13 +59,13 @@ public final class IngestWorkflow {
      * Create a new ingestion pipeline. A single pipeline can be used by as many threads as you like.
      *
      * @param platform The platform cannot be null. We submit transactions to this platform.
-     * @param accountService The account service to query for latest-signed-state information on the account existence,
+     * @param cryptoService The account service to query for latest-signed-state information on the account existence,
      *                       keys, and balance. Cannot be null.
      * @param ingestChecker Implements all the non-protobuf related semantic checks for ingestion. Cannot be null.
      */
-    public IngestWorkflow(Platform platform, AccountService accountService, IngestChecker ingestChecker) {
+    public IngestWorkflow(Platform platform, CryptoService cryptoService, IngestChecker ingestChecker) {
         this.platform = Objects.requireNonNull(platform);
-        this.accountService = Objects.requireNonNull(accountService);
+        this.cryptoService = Objects.requireNonNull(cryptoService);
         this.checker = Objects.requireNonNull(ingestChecker);
     }
 
@@ -96,23 +96,23 @@ public final class IngestWorkflow {
             //    HBAR to pay the node & network fees. And verify the start transaction time is
             //    valid.
             final var txBody = session.txBodyParser().parse(signedTransaction.bodyBytes());
-            final var account = accountService.lookupAccount(txBody.transactionID().accountID());
-            checker.checkTransactionBody(txBody, account);
+//            final var account = cryptoService.lookupAccount(txBody.transactionID().accountID());
+//            checker.checkTransactionBody(txBody, account);
 
             // 3. Validate signature
-            checker.checkSignatures(tx.signedTransactionBytes(), signedTransaction.sigMap(), account.keys());
+//            checker.checkSignatures(tx.signedTransactionBytes(), signedTransaction.sigMap(), account.keys());
 
             // 4. If signatures all check out, then check the throttles. Ya, I'd like to check
             //    throttles way back on step 1, but we need to verify whether the account is
             //    a privileged account (less than 0.0.100) and if so skip throttles. Without
             //    a way to authenticate the payload any earlier than step 3, we have to do it now.
-            checker.checkThrottles(txBody.data().kind());
+//            checker.checkThrottles(txBody.data().kind());
 
             // 5. Submit to platform
-            final var success = platform.createTransaction(txBytes);
-            if (!success) {
-                throw new BackPressureException();
-            }
+//            final var success = platform.createTransaction(txBytes);
+//            if (!success) {
+//                throw new BackPressureException();
+//            }
 
             // 6. And if we made it all the way here without any kind of trauma, then we can create
             //    a nice response and send it back to the caller. Yippee.
@@ -120,20 +120,20 @@ public final class IngestWorkflow {
             // TODO We should *DEFINITELY* have metrics for how often every response code enum is used.
             // TODO Need to create a real protobuf message here
             // TODO We need to include fee calculations here, not sure what to return...?
-            final var response = new TransactionResponse(ResponseCodeEnum.SUCCESS, 100);
+//            final var response = new TransactionResponse(ResponseCodeEnum.SUCCESS, 100);
             return new byte[0];
         } catch (MalformedProtobufException ex) {
             // TODO How to cost this?
-            final var response = new TransactionResponse(ResponseCodeEnum.BAD_ENCODING, 100);
+//            final var response = new TransactionResponse(ResponseCodeEnum.BAD_ENCODING, 100);
             return new byte[0];
         } catch (PreCheckException ex) {
             // TODO How to cost this?
-            final var response = new TransactionResponse(ex.responseCode(), 100);
+//            final var response = new TransactionResponse(ex.responseCode(), 100);
             return new byte[0];
         } catch (Throwable th) {
             // We should NEVER hit this. If we do, log it vigorously. Something very wrong happened.
             // TODO How to cost this?
-            final var response = new TransactionResponse(ResponseCodeEnum.UNKNOWN, 100);
+//            final var response = new TransactionResponse(ResponseCodeEnum.UNKNOWN, 100);
             return new byte[0];
         }
     }

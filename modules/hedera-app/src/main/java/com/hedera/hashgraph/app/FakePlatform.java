@@ -35,7 +35,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-class FakePlatform implements Platform {
+public class FakePlatform implements Platform {
     private LinkedBlockingQueue<Transaction> ingestQueue = new LinkedBlockingQueue<>(1000);
     private LinkedBlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>(10);
     private AtomicLong roundNumber = new AtomicLong();
@@ -44,7 +44,7 @@ class FakePlatform implements Platform {
     private PreHandleWorkflow preHandleWorkflow;
     private HandleTransactionWorkflow handleTransactionWorkflow;
 
-    FakePlatform() {
+    public FakePlatform() {
     }
 
     public void start(PreHandleWorkflow preHandleWorkflow, HandleTransactionWorkflow handleTransactionWorkflow) {
@@ -61,8 +61,8 @@ class FakePlatform implements Platform {
                 final var timeCreated = Instant.now();
                 ingestQueue.drainTo(transactions);
                 final var event = new FakeEvent(transactions, timeCreated);
-                eventQueue.put(event);
                 preHandleWorkflow.start(event);
+                eventQueue.put(event);
             } catch (InterruptedException ex) {
                 Thread.interrupted();
                 ex.printStackTrace();
@@ -269,7 +269,18 @@ class FakePlatform implements Platform {
 
         @Override
         public Iterator<ConsensusTransaction> consensusTransactionIterator() {
-            return null;
+            final var itr = other.transactionIterator();
+            return new Iterator<ConsensusTransaction>() {
+                @Override
+                public boolean hasNext() {
+                    return itr.hasNext();
+                }
+
+                @Override
+                public ConsensusTransaction next() {
+                    return (ConsensusTransaction) itr.next();
+                }
+            };
         }
 
         @Override

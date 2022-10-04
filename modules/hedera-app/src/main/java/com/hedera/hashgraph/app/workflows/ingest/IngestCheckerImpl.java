@@ -1,6 +1,7 @@
 package com.hedera.hashgraph.app.workflows.ingest;
 
 import com.hedera.hashgraph.base.ThrottleAccumulator;
+import com.hedera.hashgraph.hapi.model.Key;
 import com.hedera.hashgraph.hapi.model.KeyList;
 import com.hedera.hashgraph.hapi.model.SignatureMap;
 import com.hedera.hashgraph.hapi.model.TransactionBody;
@@ -33,15 +34,15 @@ public class IngestCheckerImpl implements IngestChecker {
     }
 
     @Override
-    public void checkSignatures(ByteBuffer signedTransactionBytes, SignatureMap signatureMap, KeyList keyList) {
+    public void checkSignatures(ByteBuffer signedTransactionBytes, SignatureMap signatureMap, Key key) {
         // TODO implement. For now assume it is always good
     }
 
 
     @Override
     public void checkThrottles(TransactionBody.DataOneOfType type) {
-        if (throttleAccumulator.shouldThrottle(type.name(), 1)) {
-            // TODO Throw an exception because we were throttled!
-        }
+//        if (throttleAccumulator.shouldThrottle(type.name(), 1)) {
+//            // TODO Throw an exception because we were throttled!
+//        }
     }
 }

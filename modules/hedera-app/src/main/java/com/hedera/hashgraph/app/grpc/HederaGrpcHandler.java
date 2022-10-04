@@ -5,7 +5,7 @@ import com.hedera.hashgraph.app.workflows.ingest.IngestWorkflow;
 import com.hedera.hashgraph.app.workflows.query.QueryWorkflow;
 import com.hedera.hashgraph.hapi.model.TransactionResponse;
 import com.hedera.hashgraph.hapi.model.base.Transaction;
-import com.hedera.hashgraph.token.AccountService;
+import com.hedera.hashgraph.token.CryptoService;
 import com.swirlds.common.system.Platform;
 
 import javax.annotation.Nonnull;
@@ -38,16 +38,16 @@ public final class HederaGrpcHandler {
 	 * Create a new GrpcHandler.
 	 *
 	 * @param platform A reference to the Platform. Cannot be null.
-	 * @param accountService A reference to the AccountService to use for looking up account keys and balances.
+	 * @param cryptoService A reference to the AccountService to use for looking up account keys and balances.
 	 *                       Cannot be null.
 	 * @param ingestChecker Used to validate different aspects of the ingestion flow. Cannot be null.
 	 */
 	public HederaGrpcHandler(
 			@Nonnull Platform platform,
-			@Nonnull AccountService accountService,
+			@Nonnull CryptoService cryptoService,
 			@Nonnull IngestChecker ingestChecker) {
 		this.transactionMethod = new TransactionMethod(
-				new IngestWorkflow(platform, accountService, ingestChecker));
+				new IngestWorkflow(platform, cryptoService, ingestChecker));
 		this.queryMethod = new QueryMethod(new QueryWorkflow());
 	}
 

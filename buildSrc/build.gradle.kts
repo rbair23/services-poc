@@ -39,6 +39,7 @@ dependencies {
     implementation("me.champeau.jmh:jmh-gradle-plugin:0.6.6")
     implementation("com.diffplug.spotless:spotless-plugin-gradle:6.8.0")
     implementation("gradle.plugin.com.github.johnrengelman:shadow:7.1.2")
+    implementation("com.github.spotbugs.snom:spotbugs-gradle-plugin:5.0.12")
 }
 
 tasks.generateGrammarSource {

@@ -1,26 +1,31 @@
 package com.hedera.hashgraph.token.impl;
 
-import com.hedera.hashgraph.base.MerkleRegistry;
+import com.hedera.hashgraph.base.state.StateRegistry;
+import com.hedera.hashgraph.base.state.States;
+import com.hedera.hashgraph.token.TokenQueryHandler;
 import com.hedera.hashgraph.token.TokenService;
 import com.hedera.hashgraph.token.TokenTransactionHandler;
-import com.hedera.hashgraph.token.impl.store.AccountStore;
+import com.hedera.hashgraph.token.impl.store.TokenStore;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class TokenServiceImpl implements TokenService {
-	private final AccountStore store;
-	private final TokenTransactionHandlerImpl txHandler;
+    public TokenServiceImpl(
+            @SuppressWarnings("rawtypes") StateRegistry registry) {
+        // Let the store handle migration or genesis work
+        TokenStore.register(registry);
+    }
 
-	public TokenServiceImpl(
-			/* I should get passed the merkel internal representing FileService, on which I attach my own merkle node with my own types*/
-			MerkleRegistry registry) {
-		// todo how do I get the merkle stuff needed for the file store. I guess it has to come from the constructor.
-		//      I have to take the "parent" and check if it has my node or not. If it does, then I don't have to
-		//      create it, I can just pass it in. If it isn't there, I need to create it and add it.
-		store = new AccountStore(registry);
-		txHandler = new TokenTransactionHandlerImpl(store);
-	}
+    @NonNull
+    @Override
+    public TokenTransactionHandler createTransactionHandler(@NonNull States states) {
+        final var store = new TokenStore(states);
+        return new TokenTransactionHandlerImpl(store);
+    }
 
-	@Override
-	public TokenTransactionHandler transactionHandler() {
-		return txHandler;
-	}
+    @NonNull
+    @Override
+    public TokenQueryHandler createQueryHandler(@NonNull States states) {
+        final var store = new TokenStore(states);
+        return new TokenQueryHandlerImpl(store);
+    }
 }

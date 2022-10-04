@@ -1,6 +1,7 @@
 package com.hedera.hashgraph.app.throttle;
 
 import com.hedera.hashgraph.base.ThrottleAccumulator;
+import com.hedera.hashgraph.hapi.model.HederaFunctionality;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.HashMap;
@@ -13,10 +14,10 @@ import java.util.concurrent.atomic.AtomicLong;
 // POC purposes.
 @ThreadSafe
 public class ThrottleAccumulatorImpl implements ThrottleAccumulator {
-	private final Map<String, AtomicLong> throttles = new HashMap<>();
+	private final Map<HederaFunctionality, AtomicLong> throttles = new HashMap<>();
 
 	@Override
-	public boolean shouldThrottle(final String id, final int incrementalAmount) {
+	public boolean shouldThrottle(final HederaFunctionality id, final int incrementalAmount) {
 		var throttle = throttles.get(id);
 		// Please note, this violates the spec of this method, but is OK for quick and dirty POC
 		if (throttle == null) {

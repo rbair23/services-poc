@@ -1,7 +1,10 @@
 package com.hedera.hashgraph.base;
 
-public record HandleContext(
-        ChangeManager changeManager,
+import com.hedera.hashgraph.base.record.RecordBuilder;
+
+public record HandleContext<B extends RecordBuilder>(
+        EntityIdGenerator idGenerator,
         ThrottleAccumulator throttleAccumulator,
-        FeeAccumulator feeAccumulator) {
+        FeeAccumulator feeAccumulator,
+        B recordBuilder) {
 }

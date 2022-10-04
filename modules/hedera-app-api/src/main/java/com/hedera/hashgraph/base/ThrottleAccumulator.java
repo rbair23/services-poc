@@ -1,5 +1,7 @@
 package com.hedera.hashgraph.base;
 
+import com.hedera.hashgraph.hapi.model.HederaFunctionality;
+
 /**
  * Keeps track of the amount of usage of different throttle categories (by {@code id}),
  * and returns whether the throttle has been exceeded after applying the given incremental
@@ -20,6 +22,6 @@ public interface ThrottleAccumulator {
 	 *                          permitted.
 	 * @return true if the throttle has been exceeded, false otherwise.
 	 */
-	boolean shouldThrottle(String id, int incrementalAmount);
+	boolean shouldThrottle(HederaFunctionality id, int incrementalAmount);
 	// NOTE: Be sure to test the actual implementation against insane incremental amounts like MAX_VALUE that can cause overflow
 }

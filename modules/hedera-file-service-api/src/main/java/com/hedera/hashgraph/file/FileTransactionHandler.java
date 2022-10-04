@@ -1,10 +1,11 @@
 package com.hedera.hashgraph.file;
 
 import com.hedera.hashgraph.base.HandleContext;
-import com.hedera.hashgraph.hapi.model.TransactionRecord;
+import com.hedera.hashgraph.base.TransactionHandler;
+import com.hedera.hashgraph.base.record.RecordBuilder;
 import com.hedera.hashgraph.hapi.model.file.FileCreateTransactionBody;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
-// todo how to do rollback and commit? especially across modules
-public interface FileTransactionHandler {
-	TransactionRecord handleFileCreate(HandleContext ctx, FileCreateTransactionBody tx);
+public interface FileTransactionHandler extends TransactionHandler {
+	void handleFileCreate(@NonNull HandleContext<RecordBuilder> ctx, @NonNull FileCreateTransactionBody tx);
 }

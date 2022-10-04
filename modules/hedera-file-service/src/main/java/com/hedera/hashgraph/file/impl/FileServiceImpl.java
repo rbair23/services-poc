@@ -1,29 +1,32 @@
 package com.hedera.hashgraph.file.impl;
 
-import com.hedera.hashgraph.base.MerkleRegistry;
-import com.hedera.hashgraph.file.FilePreHandler;
+import com.hedera.hashgraph.base.state.StateRegistry;
+import com.hedera.hashgraph.base.state.States;
+import com.hedera.hashgraph.file.FileQueryHandler;
 import com.hedera.hashgraph.file.FileService;
 import com.hedera.hashgraph.file.FileTransactionHandler;
 import com.hedera.hashgraph.file.impl.store.FileStore;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class FileServiceImpl implements FileService {
 	private final FileStore store;
-	private final FileTransactionHandler txHandler;
-	private final FilePreHandler preHandler;
+//	private final FileTransactionHandler txHandler;
 
-	public FileServiceImpl(MerkleRegistry registry) {
-		store = new FileStore(registry);
-		txHandler = new FileTransactionHandlerImpl(store);
-		preHandler = new FilePreHandlerImpl();
+	public FileServiceImpl(StateRegistry registry) {
+		store = new FileStore();
+//		txHandler = new FileTransactionHandlerImpl(store);
+//		txHandler = null;
 	}
 
 	@Override
-	public FilePreHandler preHandler() {
-		return preHandler;
+	@NonNull
+	public FileTransactionHandler createTransactionHandler(@NonNull States states) {
+		return new FileTransactionHandlerImpl(store);
 	}
 
 	@Override
-	public FileTransactionHandler transactionHandler() {
-		return txHandler;
+	public FileQueryHandler createQueryHandler(States states) {
+		return new FileQueryHandler() {
+		};
 	}
 }

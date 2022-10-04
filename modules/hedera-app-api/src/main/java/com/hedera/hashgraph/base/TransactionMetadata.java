@@ -4,9 +4,13 @@ import com.hedera.hashgraph.hapi.model.base.Transaction;
 
 import java.util.Objects;
 
-public abstract class TransactionMetadata {
+public class TransactionMetadata {
     private final boolean failed;
     private final Transaction tx;
+
+    public TransactionMetadata(Transaction tx) {
+        this(tx, false);
+    }
 
     protected TransactionMetadata(Transaction tx, boolean failed) {
         this.tx = tx;

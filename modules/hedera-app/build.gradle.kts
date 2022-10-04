@@ -18,7 +18,7 @@ dependencies {
     implementation(libs.proto.parse)
     implementation(libs.swirlds.common)
     implementation(libs.swirlds.merkle)
-    testImplementation(libs.hapi) // TODO This should be replaced by Jasper's approach.
+    testImplementation(libs.bundles.bouncycastle)
 }
 
 /** Patch libraries that are not Java 9 modules */
@@ -47,4 +47,8 @@ extraJavaModuleInfo {
     automaticModule("org.openjfx:javafx-base", "javafx.base")
 
     failOnMissingModuleInfo.set(false)
+}
+
+spotbugs {
+    setReportLevel("high")
 }

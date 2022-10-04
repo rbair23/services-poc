@@ -27,7 +27,7 @@ plugins {
     `java-library`
     `maven-publish`
     jacoco
-//    id("com.diffplug.spotless")
+    id("com.github.spotbugs")
 }
 
 group = "com.hedera.hashgraph"

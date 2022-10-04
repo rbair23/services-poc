@@ -1,8 +1,8 @@
 package com.hedera.hashgraph.app.grpc;
 
-import io.grpc.MethodDescriptor;
-import io.helidon.grpc.core.MarshallerSupplier;
-import io.helidon.grpc.server.ServiceDescriptor;
+//import io.grpc.MethodDescriptor;
+//import io.helidon.grpc.core.MarshallerSupplier;
+//import io.helidon.grpc.server.ServiceDescriptor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -38,20 +38,20 @@ public final class HederaGrpcServiceBuilder {
      * If we get more sophisticated and reuse byte array buffers, we will need to use a
      * {@link ThreadLocal} to make sure we have a unique byte array buffer for each request.
      */
-    private static final NoopMarshaller NOOP_MARSHALLER = new NoopMarshaller();
+//    private static final NoopMarshaller NOOP_MARSHALLER = new NoopMarshaller();
 
     /**
      * Create a single instance of the marshaller supplier to provide to every gRPC method registered
      * with the system. We only need the one, and it always returns the same NoopMarshaller instance.
      * This is fine to use with multiple app instances within the same JVM.
      */
-    private static final MarshallerSupplier MARSHALLER_SUPPLIER = new MarshallerSupplier() {
-        @Override
-        public <T> MethodDescriptor.Marshaller<T> get(Class<T> clazz) {
-            //noinspection unchecked
-            return (MethodDescriptor.Marshaller<T>) NOOP_MARSHALLER;
-        }
-    };
+//    private static final MarshallerSupplier MARSHALLER_SUPPLIER = new MarshallerSupplier() {
+//        @Override
+//        public <T> MethodDescriptor.Marshaller<T> get(Class<T> clazz) {
+//            //noinspection unchecked
+//            return (MethodDescriptor.Marshaller<T>) NOOP_MARSHALLER;
+//        }
+//    };
 
     /**
      * The name of the service we are building.
@@ -134,68 +134,68 @@ public final class HederaGrpcServiceBuilder {
         return this;
     }
 
-    /**
-     * Build a gRPC {@link ServiceDescriptor} for each transaction and query method registered with this builder.
-     *
-     * @return a non-null {@link ServiceDescriptor}.
-     */
-    public ServiceDescriptor build() {
-        final var builder = ServiceDescriptor.builder(null, serviceName);
-        txMethodNames.forEach(methodName -> builder.unary(
-                methodName,
-                transactionMethod,
-                rules -> rules.marshallerSupplier(MARSHALLER_SUPPLIER)));
-        queryMethodNames.forEach(methodName -> builder.unary(
-                methodName,
-                queryMethod,
-                rules -> rules.marshallerSupplier(MARSHALLER_SUPPLIER)));
-        return builder.build();
-    }
+//    /**
+//     * Build a gRPC {@link ServiceDescriptor} for each transaction and query method registered with this builder.
+//     *
+//     * @return a non-null {@link ServiceDescriptor}.
+//     */
+//    public ServiceDescriptor build() {
+//        final var builder = ServiceDescriptor.builder(null, serviceName);
+//        txMethodNames.forEach(methodName -> builder.unary(
+//                methodName,
+//                transactionMethod,
+//                rules -> rules.marshallerSupplier(MARSHALLER_SUPPLIER)));
+//        queryMethodNames.forEach(methodName -> builder.unary(
+//                methodName,
+//                queryMethod,
+//                rules -> rules.marshallerSupplier(MARSHALLER_SUPPLIER)));
+//        return builder.build();
+//    }
 
     /**
      * An implementation of a gRPC marshaller which does nothing but pass through byte arrays.
      * A single implementation of this class is designed to be used by multiple threads, including
      * by multiple app instances within a single JVM!
      */
-    @ThreadSafe
-    private static final class NoopMarshaller implements MethodDescriptor.Marshaller<byte[]> {
-        // TODO This value should be retrieved from config. We need the new config API from platform base.
-        //      Oh. When we do have that config, then maybe the NoopMarshaller will have to change to being
-        //      a single instance within the app instance rather than a single instance across the JVM.
-        private static final int MAX_MESSAGE_SIZE = 1024 * 6; // 6k
-
-        @Override
-        public InputStream stream(final byte[] value) {
-            // Simply wrap the supplied byte array.
-            // TODO Should there be a defensive copy made here? What is the API contract here? I'm assuming not.
-            //      If we used something more rigorous than a byte[], such as some kind of ByteBuffer or maybe
-            //      our own type of buffer, then we could mark it as "immutable" so it is safe to pass around
-            //      without making copies.
-            return new ByteArrayInputStream(value);
-        }
-
-        @Override
-        public byte[] parse(final InputStream stream) {
-            try {
-                // TODO I could have more sophisticated logic to read a chunk at a time from the stream instead of
-                //      a single byte at a time. Just remember it may only read a subset of the total buffer size
-                //      in a single call!
-                final var buffer = new byte[MAX_MESSAGE_SIZE];
-                var count = 0;
-                var b = 0;
-                while ((b = stream.read()) != -1) {
-                    buffer[count++] = (byte) b;
-                    if (count >= MAX_MESSAGE_SIZE) {
-                        // TODO throw an exception because the message was too big.
-                        //      What kind of response is given to the user in this case?
-                        throw new RuntimeException("Too big message, boss.");
-                    }
-                }
-                return buffer;
-            } catch (IOException e) {
-                // TODO Do I need a more specific exception type?
-                throw new RuntimeException(e);
-            }
-        }
-    }
+//    @ThreadSafe
+//    private static final class NoopMarshaller implements MethodDescriptor.Marshaller<byte[]> {
+//        // TODO This value should be retrieved from config. We need the new config API from platform base.
+//        //      Oh. When we do have that config, then maybe the NoopMarshaller will have to change to being
+//        //      a single instance within the app instance rather than a single instance across the JVM.
+//        private static final int MAX_MESSAGE_SIZE = 1024 * 6; // 6k
+//
+//        @Override
+//        public InputStream stream(final byte[] value) {
+//            // Simply wrap the supplied byte array.
+//            // TODO Should there be a defensive copy made here? What is the API contract here? I'm assuming not.
+//            //      If we used something more rigorous than a byte[], such as some kind of ByteBuffer or maybe
+//            //      our own type of buffer, then we could mark it as "immutable" so it is safe to pass around
+//            //      without making copies.
+//            return new ByteArrayInputStream(value);
+//        }
+//
+//        @Override
+//        public byte[] parse(final InputStream stream) {
+//            try {
+//                // TODO I could have more sophisticated logic to read a chunk at a time from the stream instead of
+//                //      a single byte at a time. Just remember it may only read a subset of the total buffer size
+//                //      in a single call!
+//                final var buffer = new byte[MAX_MESSAGE_SIZE];
+//                var count = 0;
+//                var b = 0;
+//                while ((b = stream.read()) != -1) {
+//                    buffer[count++] = (byte) b;
+//                    if (count >= MAX_MESSAGE_SIZE) {
+//                        // TODO throw an exception because the message was too big.
+//                        //      What kind of response is given to the user in this case?
+//                        throw new RuntimeException("Too big message, boss.");
+//                    }
+//                }
+//                return buffer;
+//            } catch (IOException e) {
+//                // TODO Do I need a more specific exception type?
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
 }

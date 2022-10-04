@@ -5,15 +5,18 @@ import com.hedera.hashgraph.app.SessionContext;
 import com.hedera.hashgraph.app.workflows.ingest.IngestChecker;
 import com.hedera.hashgraph.app.workflows.ingest.PreCheckException;
 import com.hedera.hashgraph.base.TransactionMetadata;
+import com.hedera.hashgraph.hapi.model.base.ResponseCodeEnum;
 import com.hedera.hashgraph.hapi.parser.QueryProtoParser;
 import com.hedera.hashgraph.hapi.parser.TransactionBodyProtoParser;
 import com.hedera.hashgraph.hapi.parser.base.SignedTransactionProtoParser;
 import com.hedera.hashgraph.hapi.parser.base.TransactionProtoParser;
-import com.hedera.hashgraph.token.AccountService;
+import com.hedera.hashgraph.token.CryptoQueryHandler;
+import com.hedera.hashgraph.token.CryptoService;
 import com.swirlds.common.system.events.Event;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Supplier;
 
 public class PreHandleWorkflow {
     /**
@@ -29,17 +32,17 @@ public class PreHandleWorkflow {
                     new TransactionBodyProtoParser()));
 
     private final ExecutorService exe;
-    private final AccountService accountService;
+    private final Supplier<CryptoQueryHandler> query;
     private final IngestChecker checker;
     private final PreHandleDispatcher dispatcher;
 
     public PreHandleWorkflow(
             ExecutorService exe,
-            AccountService accountService,
+            Supplier<CryptoQueryHandler> query,
             IngestChecker ingestChecker,
             PreHandleDispatcher dispatcher) {
         this.exe = Objects.requireNonNull(exe);
-        this.accountService = Objects.requireNonNull(accountService);
+        this.query = Objects.requireNonNull(query);
         this.checker = Objects.requireNonNull(ingestChecker);
         this.dispatcher = Objects.requireNonNull(dispatcher);
     }
@@ -71,11 +74,17 @@ public class PreHandleWorkflow {
 
             // 2. Parse and validate the TransactionBody.
             final var txBody = ctx.txBodyParser().parse(signedTransaction.bodyBytes());
-            final var account = accountService.lookupAccount(txBody.transactionID().accountID());
+            final var accountOpt = query.get().getAccountById(txBody.transactionID().accountID());
+            if (accountOpt.isEmpty()) {
+                // This is an error condition. No account!
+                throw new PreCheckException(ResponseCodeEnum.INVALID_ACCOUNT_ID, "Account missing");
+            }
+            final var account = accountOpt.get();
             checker.checkTransactionBody(txBody, account);
 
             // 3. Validate signature
-            checker.checkSignatures(tx.signedTransactionBytes(), signedTransaction.sigMap(), account.keys());
+            final var key = account.key().orElse(null);
+            checker.checkSignatures(tx.signedTransactionBytes(), signedTransaction.sigMap(), key);
 
             // 4. If signatures all check out, then check the throttles. Ya, I'd like to check
             //    throttles way back on step 1, but we need to verify whether the account is
@@ -87,6 +96,11 @@ public class PreHandleWorkflow {
             // Now that all the standard "ingest" checks are done, delegate to the appropriate service module
             // to do any service-specific pre-checks.
             dispatcher.dispatch(txBody.data());
+
+            // Looks like we've done all we can and still haven't encountered any kind of problem, so we can
+            // go ahead and create and return the transaction metadata.
+            // TODO Need to provide a way for service modules to do their own preloading and save it in the md
+            return new TransactionMetadata(tx);
         } catch (PreCheckException preCheckException) {
             // TODO Actually we should have a more specific kind of metadata here maybe? And definitely don't log.
             return new TransactionMetadata.UnknownErrorTransactionMetadata(preCheckException);
@@ -97,6 +111,5 @@ public class PreHandleWorkflow {
             // TODO Log it.
             return new TransactionMetadata.UnknownErrorTransactionMetadata(th);
         }
-        return null;
     }
 }

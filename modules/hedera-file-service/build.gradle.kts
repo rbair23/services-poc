@@ -11,4 +11,5 @@ dependencies {
     implementation(libs.swirlds.common)
     implementation(libs.swirlds.merkle)
     implementation(libs.proto.parse)
+    compileOnly(libs.spotbugs)
 }
